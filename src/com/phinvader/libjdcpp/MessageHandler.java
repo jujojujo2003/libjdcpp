@@ -45,14 +45,20 @@ public class MessageHandler {
 	public synchronized void addMessage(DCMessage msg) {
 		// TODO fill code
 	}
-	
+
 	/**
-	 * This function is a means to get updates from the MessageHandler when a new message is received.
-	 * @param o
+	 * This function is a means to get updates from the MessageHandler when a
+	 * new message is received. As soon as a message is recieved all monitors
+	 * registered will be .notify() in order to wake up threads waiting on them.
+	 * Insite of this it is advised to wait() with a timeout of say 5 seconds to
+	 * avoid deadlocks. Deadlock senarios is possible where a thread gets the
+	 * notify() before it calls wait() and hence regular polling is required
+	 * 
+	 * @param monitor
 	 * @return
 	 */
-	public int requestupdates(Object o) {
-		// TODO Change this to a listener interface or some better callback design
+	public int requestupdates(Object monitor) {
+		// TODO Change this to a listener interface if it would be better.
 		return 0;
 	}
 }
