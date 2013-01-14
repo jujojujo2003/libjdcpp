@@ -1,6 +1,7 @@
 package com.phinvader.libjdcpp;
 
 import java.net.Socket;
+import java.util.concurrent.Semaphore;
 
 /**
  * This is the Socket message handler class. Every TCP Connection should be
@@ -50,22 +51,30 @@ public class MessageHandler {
 	public void addMessage(DCMessage msg) {
 		// TODO fill code
 		// TODO Ensure concurrent thread access with Queue size block
-		// Avoid Polling where possible
 	}
 
 	/**
 	 * This function is a means to get updates from the MessageHandler when a
-	 * new message is received. As soon as a message is received all monitors
-	 * registered will be .notify() in order to wake up threads waiting on them.
-	 * In spite of this it is advised to wait() with a timeout of say 5 seconds to
-	 * avoid deadlocks. Deadlock scenarios is possible where a thread gets the
-	 * notify() before it calls wait() and hence regular polling is required
+	 * new message is received. As soon as a message is received the semaphore
+	 * registered will be released a single permit to wake up threads waiting on
+	 * them.
+	 * If a semaphore has already been registered it will be discarded and
+	 * replaced with the new one. The old semaphore will no longer receive
+	 * permits
 	 * 
-	 * @param monitor
-	 * @return
+	 * @see MessageHandler#discardupdates()
+	 * @param sem_lock
 	 */
-	public int requestupdates(Object monitor) {
-		// TODO Change this to a listener interface if it would be better.
-		return 0;
+	public void requestupdates(Semaphore sem_lock) {
+		// TODO add code. Maintain only a single semaphore
+	}
+
+	/**
+	 * This function is the opposite of
+	 * {@link MessageHandler#requestupdates(Semaphore)}. If a semaphore is
+	 * registered it will be discarded for future updates.
+	 */
+	public void discardupdates() {
+		// TODO discard code to be added
 	}
 }
