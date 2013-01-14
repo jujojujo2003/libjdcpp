@@ -69,7 +69,7 @@ public class DCFunctions {
 	}
 	
 	/**
-	 * function used while tokenizing within a byte array
+	 * function used while tokenizing within a byte array. Returns b.length if not found
 	 * @param b
 	 * @param offset
 	 * @param c
@@ -81,7 +81,7 @@ public class DCFunctions {
 			if((char)b[i] == c)
 				return i;
 		}
-		return -1;
+		return i;
 	}
 	
 
