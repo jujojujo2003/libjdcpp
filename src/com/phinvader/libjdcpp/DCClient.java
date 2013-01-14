@@ -1,6 +1,9 @@
 package com.phinvader.libjdcpp;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
+
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
 
 /**
  * 
@@ -52,5 +55,12 @@ public class DCClient {
 	 */
 	public void connect(String ip, DCPreferences pref) {
 		connect(ip, 411, pref);
+	}
+	
+	/**
+	 * @return The list of users registered with this hub.
+	 */
+	public ArrayList<DCUser> get_nick_list() { 
+		return null;
 	}
 }
