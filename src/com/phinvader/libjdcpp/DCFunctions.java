@@ -67,5 +67,22 @@ public class DCFunctions {
 			ret[i] = (byte) s.charAt(i);
 		return ret;
 	}
+	
+	/**
+	 * function used while tokenizing within a byte array
+	 * @param b
+	 * @param offset
+	 * @param c
+	 * @return
+	 */
+	public static int find_next(byte[] b, int offset, char c) {
+		int i;
+		for(i = offset; i < b.length; i++) {
+			if((char)b[i] == c)
+				return i;
+		}
+		return -1;
+	}
+	
 
 }
