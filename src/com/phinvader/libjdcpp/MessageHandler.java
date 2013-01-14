@@ -30,8 +30,9 @@ public class MessageHandler {
 	 * 
 	 * @return
 	 */
-	public synchronized DCMessage getNextMessage() {
+	public DCMessage getNextMessage() {
 		// TODO fill code
+		// TODO Ensure concurrent thread access to Message Queue
 		return null;
 	}
 
@@ -40,18 +41,24 @@ public class MessageHandler {
 	 * only used by the parallel thread listening on the socket and handling
 	 * messages. As soon as a message is received this function will be called
 	 * 
+	 * NOTE: This function will block calling thread if the Message Queue is
+	 * full and will remain blocked until the message Queue is free.
+	 * DCConstants.max_message_queue_size specifies the Maximum Queue size
+	 * 
 	 * @param msg
 	 */
-	public synchronized void addMessage(DCMessage msg) {
+	public void addMessage(DCMessage msg) {
 		// TODO fill code
+		// TODO Ensure concurrent thread access with Queue size block
+		// Avoid Polling where possible
 	}
 
 	/**
 	 * This function is a means to get updates from the MessageHandler when a
-	 * new message is received. As soon as a message is recieved all monitors
+	 * new message is received. As soon as a message is received all monitors
 	 * registered will be .notify() in order to wake up threads waiting on them.
-	 * Insite of this it is advised to wait() with a timeout of say 5 seconds to
-	 * avoid deadlocks. Deadlock senarios is possible where a thread gets the
+	 * In spite of this it is advised to wait() with a timeout of say 5 seconds to
+	 * avoid deadlocks. Deadlock scenarios is possible where a thread gets the
 	 * notify() before it calls wait() and hence regular polling is required
 	 * 
 	 * @param monitor
