@@ -16,5 +16,4 @@ public class DCUser {
 	public String connection;
 	public boolean active;
 	public boolean op;
-	
 }

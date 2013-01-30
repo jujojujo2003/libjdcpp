@@ -1,5 +1,7 @@
 package com.phinvader.libjdcpp;
 
+import java.util.ArrayList;
+
 /**
  * This class is a universal container for all DC messages which are transfered
  * over TCP. This includes the data of a file download
@@ -11,8 +13,11 @@ public class DCMessage {
 	String msg_s; // When there is no command and it is just a text message
 	String command;
 	String lock_s; // Lock string in $Lock Command
-	String key_s; // Key string in $Lock command
-
+	String key_s; // Key string in $Lock command or the key from $Key
+	String hubname_s; // HubName given by $HubName command
+	String[] supports; // List of features supported (by $Supports command
+	String hello_s;
+	DCUser myinfo;
 	/**
 	 * Parses a byte[] array to produce a DCMessage Object.
 	 * 
@@ -55,10 +60,16 @@ public class DCMessage {
 					key_s = key_split[1];
 
 			} else if (command.equals("Key")) {
+				key_s = new String(input,beg+1,input.length-beg-1);
 			} else if (command.equals("HubName")) {
+				hubname_s = new String(input,beg+1,input.length-beg-1);
 			} else if (command.equals("Supports")) {
+				String sup_s = new String(input,beg+1,input.length-beg-1);
+				supports = sup_s.split(" ");
 			} else if (command.equals("Hello")) {
+				String hello_s = new String(input,beg+1,input.length-beg-1);
 			} else if (command.equals("MyINFO")) {
+				
 			} else if (command.equals("ValidateNick")) {
 			} else if (command.equals("Version")) {
 			} else if (command.equals("GetNickList")) {
