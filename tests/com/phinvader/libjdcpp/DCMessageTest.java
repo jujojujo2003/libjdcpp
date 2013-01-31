@@ -63,6 +63,7 @@ public class DCMessageTest {
 		assertEquals(1, msg.myinfo.speed_id);
 		assertEquals(8270469159l, msg.myinfo.share_size);
 	}
+
 	@Test
 	public void testParse_message_myinfo2() {
 		String msg_s = "$MyINFO $ALL svsc hii<++ V:0.75,M:P,H:1/0/0,S:3,O:3>$ $0.005\001$s@gmail.com$15943746752$";
@@ -76,6 +77,14 @@ public class DCMessageTest {
 		assertEquals(1, msg.myinfo.speed_id);
 		assertEquals("s@gmail.com", msg.myinfo.email);
 		assertEquals(15943746752l, msg.myinfo.share_size);
+	}
+
+	@Test
+	public void testParse_message_quit() {
+		String msg_s = "$Quit someuser123";
+		DCMessage msg = DCMessage.parse_message(msg_s.getBytes());
+		assertEquals("Quit", msg.command);
+		assertEquals("someuser123", msg.quit_s);
 	}
 
 }

@@ -18,6 +18,7 @@ public class DCMessage {
 	String[] supports; // List of features supported (by $Supports command
 	String hello_s;
 	DCUser myinfo;
+	String quit_s;
 
 	/**
 	 * Parses a byte[] array to produce a DCMessage Object.
@@ -133,6 +134,8 @@ public class DCMessage {
 			} else if (command.equals("GetNickList")) {
 			} else if (command.equals("ConnectToMe")) {
 			} else if (command.equals("Quit")) {
+				quit_s = new String(input, beg + 1, input.length - beg
+						- 1);
 			} else {
 				parse_success = false;
 			}
