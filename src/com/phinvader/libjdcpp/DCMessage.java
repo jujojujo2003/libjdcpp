@@ -156,6 +156,7 @@ public class DCMessage {
 			} else if (command.equals("GetNickList")) {
 			} else if (command.equals("ConnectToMe")) {
 			} else if (command.equals("HubQuit")) {
+				quit_s = new String(input, beg + 1, input.length - beg - 1);
 				// return just command as HubQuit
 			} else if (command.equals("Quit")) {
 				quit_s = new String(input, beg + 1, input.length - beg - 1);
@@ -191,6 +192,7 @@ public class DCMessage {
 		} else if (command.equals("MyINFO")) {
 			desc += myinfo.nick;
 		} else if (command.equals("HubQuit")) {
+			desc += quit_s;
 		} else if (command.equals("Quit")) {
 			desc += quit_s;
 		}

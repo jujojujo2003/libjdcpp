@@ -54,7 +54,7 @@ public class MessageHandler {
 					}
 				} catch (Exception e) { // IOException InterruptedException
 					try {
-						addMessage(DCMessage.parse_message("$HubQuit"
+						addMessage(DCMessage.parse_message(("$HubQuit " + e.toString())
 								.getBytes()));
 						s.close();
 					} catch (InterruptedException | IOException e1) {
