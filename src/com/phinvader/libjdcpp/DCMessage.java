@@ -170,7 +170,33 @@ public class DCMessage {
 			command = null;
 			msg_s = new String(input);
 		}
+	}
 
+	public String toString() {
+		String desc = command;
+		if (desc == null)
+			return msg_s;
+		desc += " : ";
+		if (command.equals("Lock")) {
+			desc += lock_s;
+			desc += " pk : " + key_s;
+		} else if (command.equals("Key")) {
+			desc += key_s;
+		} else if (command.equals("HubName")) {
+			desc += hubname_s;
+		} else if (command.equals("Supports")) {
+			for (String s : supports)
+				desc += s + " ";
+		} else if (command.equals("Hello")) {
+			desc += hello_s;
+		} else if (command.equals("MyINFO")) {
+			desc += myinfo.nick;
+		} else if (command.equals("HubQuit")) {
+		} else if (command.equals("Quit")) {
+			desc += quit_s;
+		}
+
+		return desc;
 	}
 
 }
