@@ -57,6 +57,8 @@ public class MessageHandler {
 						addMessage(DCMessage.parse_message(("$HubQuit " + e.toString())
 								.getBytes()));
 						s.close();
+						//TODO remove this stacktrace. Added only for debugging purposes
+						e.printStackTrace();
 					} catch (InterruptedException | IOException e1) {
 					}
 				}
