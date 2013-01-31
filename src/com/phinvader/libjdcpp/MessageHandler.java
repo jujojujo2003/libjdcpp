@@ -195,7 +195,7 @@ public class MessageHandler {
 		if(myuser.email == null) {
 			myuser.email = "";
 		}
-		String msg = "$MyINFO ";
+		String msg = "$MyINFO $ALL ";
 		msg += myuser.nick;
 		msg += myuser.description + " " + myuser.tag + "$ $";
 		msg += myuser.connection_speed;
