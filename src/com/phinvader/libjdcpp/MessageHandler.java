@@ -183,6 +183,18 @@ public class MessageHandler {
 
 	public void send_myinfo(DCUser user) {
 		DCUser myuser = new DCUser(user);
+		if (myuser.description == null)
+			myuser.description = " ";
+		if (myuser.tag == null) {
+			myuser.tag = "<++ V:" + DCConstants.version_short + ","
+					+ (myuser.active ? "M:A" : "M:P") + "," + "H:1/0/0,S:3>";
+		}
+		if(myuser.connection_speed == null) {
+			myuser.connection_speed = "1";
+		}
+		if(myuser.email == null) {
+			myuser.email = "";
+		}
 		String msg = "$MyINFO ";
 		msg += myuser.nick;
 		msg += myuser.description + " " + myuser.tag + "$ $";
