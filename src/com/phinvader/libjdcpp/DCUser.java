@@ -18,4 +18,18 @@ public class DCUser {
 	public byte speed_id; // filled by myinfo
 	public boolean active; // filled by tag from myfino
 	public boolean op;
+	public DCUser(DCUser original) {
+		nick = original.nick;
+		ip = original.ip;
+		share_size = original.share_size;
+		description = original.description;
+		tag = original.tag;
+		email = original.email;
+		connection_speed = original.connection_speed;
+		speed_id = original.speed_id;
+		active = original.active;
+		op = original.op;
+	}
+	public DCUser() {
+	}
 }

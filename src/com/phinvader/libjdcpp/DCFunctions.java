@@ -3,8 +3,10 @@
  */
 package com.phinvader.libjdcpp;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.spi.CharsetProvider;
 import java.util.ArrayList;
@@ -62,10 +64,11 @@ public class DCFunctions {
 	 * @return
 	 */
 	public static byte[] toBytes(String s) {
-		byte[] ret = new byte[s.length()];
-		for (int i = 0; i < s.length(); i++)
-			ret[i] = (byte) s.charAt(i);
-		return ret;
+		return s.getBytes(StandardCharsets.ISO_8859_1);
+		/*
+		 * byte[] ret = new byte[s.length()]; for (int i = 0; i < s.length();
+		 * i++) ret[i] = (byte) s.charAt(i); return ret;
+		 */
 	}
 
 	/**
