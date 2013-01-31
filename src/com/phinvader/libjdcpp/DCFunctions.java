@@ -67,9 +67,12 @@ public class DCFunctions {
 			ret[i] = (byte) s.charAt(i);
 		return ret;
 	}
-	
+
 	/**
-	 * function used while tokenizing within a byte array. Returns b.length if not found
+	 * function used while tokenizing within a byte array. Returns b.length if
+	 * not found returns the index in the byte array where the first instance of
+	 * the character is found
+	 * 
 	 * @param b
 	 * @param offset
 	 * @param c
@@ -77,12 +80,11 @@ public class DCFunctions {
 	 */
 	public static int find_next(byte[] b, int offset, char c) {
 		int i;
-		for(i = offset; i < b.length; i++) {
-			if((char)b[i] == c)
+		for (i = offset; i < b.length; i++) {
+			if ((char) b[i] == c)
 				return i;
 		}
 		return i;
 	}
-	
 
 }

@@ -18,6 +18,7 @@ public class DCMessage {
 	String[] supports; // List of features supported (by $Supports command
 	String hello_s;
 	DCUser myinfo;
+
 	/**
 	 * Parses a byte[] array to produce a DCMessage Object.
 	 * 
@@ -60,16 +61,73 @@ public class DCMessage {
 					key_s = key_split[1];
 
 			} else if (command.equals("Key")) {
-				key_s = new String(input,beg+1,input.length-beg-1);
+				key_s = new String(input, beg + 1, input.length - beg - 1);
 			} else if (command.equals("HubName")) {
-				hubname_s = new String(input,beg+1,input.length-beg-1);
+				hubname_s = new String(input, beg + 1, input.length - beg - 1);
 			} else if (command.equals("Supports")) {
-				String sup_s = new String(input,beg+1,input.length-beg-1);
+				String sup_s = new String(input, beg + 1, input.length - beg
+						- 1);
 				supports = sup_s.split(" ");
 			} else if (command.equals("Hello")) {
-				String hello_s = new String(input,beg+1,input.length-beg-1);
+				String hello_s = new String(input, beg + 1, input.length - beg
+						- 1);
 			} else if (command.equals("MyINFO")) {
-				
+				myinfo = new DCUser();
+				DCFunctions.find_next(input, beg, '$');
+				int offsets[] = new int[6];
+				int seglength[] = new int[6];
+				int loffset = DCFunctions.find_next(input, beg + 1, '$');
+				// $ALL
+				offsets[0] = loffset;
+				loffset = DCFunctions.find_next(input, loffset, ' ');
+				seglength[0] = loffset - offsets[0];
+				loffset++;
+				// Nick Name
+				offsets[1] = loffset;
+				loffset = DCFunctions.find_next(input, loffset, ' ');
+				seglength[1] = loffset - offsets[1];
+				loffset++;
+				// Interest String
+				offsets[2] = loffset;
+				loffset = DCFunctions.find_next(input, loffset, '$');
+				seglength[2] = loffset - offsets[2];
+				loffset++;
+				// Speed specifier
+				loffset = DCFunctions.find_next(input, loffset, '$') + 1; // skipping blankspace
+				offsets[3] = loffset;
+				loffset = DCFunctions.find_next(input, loffset, '$');
+				seglength[3] = loffset - offsets[3];
+				loffset++;
+				// email
+				//$MyINFO $ALL downloadinghub awesome user123<++ V:0.75,M:A,H:1/0/0,S:5>$ $1\001$asd@asd$8270469159$
+				offsets[4] = loffset;
+				loffset = DCFunctions.find_next(input, loffset, '$');
+				seglength[4] = loffset - offsets[4];
+				loffset++;
+				// Share Size
+				offsets[5] = loffset;
+				loffset = DCFunctions.find_next(input, loffset, '$');
+				seglength[5] = loffset - offsets[5];
+				if (new String(input, offsets[0], seglength[0]).equals("$ALL")) {
+					myinfo.nick = new String(input, offsets[1], seglength[1]);
+					myinfo.description = new String(input, offsets[2],
+							seglength[2]);
+					int desc_split_offset = myinfo.description.lastIndexOf('<'); // Split for the tag
+					myinfo.tag = myinfo.description.substring(desc_split_offset);
+					if(myinfo.tag.contains("M:A"))
+						myinfo.active = true;
+					else
+						myinfo.active = false;
+					myinfo.description = myinfo.description.substring(0, desc_split_offset);
+					myinfo.connection_speed = new String(input, offsets[3],
+							seglength[3] - 1);
+					myinfo.speed_id = input[offsets[3] + seglength[3] - 1];
+					myinfo.email = new String(input,offsets[4],seglength[4]);
+					myinfo.share_size = Long.parseLong(new String(input,
+							offsets[5], seglength[5]));
+				} else {
+					parse_success = false;
+				}
 			} else if (command.equals("ValidateNick")) {
 			} else if (command.equals("Version")) {
 			} else if (command.equals("GetNickList")) {

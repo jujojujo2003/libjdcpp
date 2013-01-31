@@ -50,4 +50,32 @@ public class DCMessageTest {
 		assertArrayEquals(expected, msg.supports);
 	}
 
+	@Test
+	public void testParse_message_myinfo1() {
+		String msg_s = "$MyINFO $ALL downloadinghub awesome user123<++ V:0.75,M:A,H:1/0/0,S:5>$ $1\001$$8270469159$";
+		DCMessage msg = DCMessage.parse_message(msg_s.getBytes());
+		assertEquals("MyINFO", msg.command);
+		assertEquals("downloadinghub", msg.myinfo.nick);
+		assertEquals("awesome user123", msg.myinfo.description);
+		assertEquals("<++ V:0.75,M:A,H:1/0/0,S:5>", msg.myinfo.tag);
+		assertEquals(true, msg.myinfo.active);
+		assertEquals("1", msg.myinfo.connection_speed);
+		assertEquals(1, msg.myinfo.speed_id);
+		assertEquals(8270469159l, msg.myinfo.share_size);
+	}
+	@Test
+	public void testParse_message_myinfo2() {
+		String msg_s = "$MyINFO $ALL svsc hii<++ V:0.75,M:P,H:1/0/0,S:3,O:3>$ $0.005\001$s@gmail.com$15943746752$";
+		DCMessage msg = DCMessage.parse_message(msg_s.getBytes());
+		assertEquals("MyINFO", msg.command);
+		assertEquals("svsc", msg.myinfo.nick);
+		assertEquals("hii", msg.myinfo.description);
+		assertEquals("<++ V:0.75,M:P,H:1/0/0,S:3,O:3>", msg.myinfo.tag);
+		assertEquals(false, msg.myinfo.active);
+		assertEquals("0.005", msg.myinfo.connection_speed);
+		assertEquals(1, msg.myinfo.speed_id);
+		assertEquals("s@gmail.com", msg.myinfo.email);
+		assertEquals(15943746752l, msg.myinfo.share_size);
+	}
+
 }
