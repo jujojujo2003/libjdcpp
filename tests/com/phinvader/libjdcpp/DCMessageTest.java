@@ -40,6 +40,14 @@ public class DCMessageTest {
 		assertEquals("libjdcppHub", msg.hubname_s);
 		assertEquals("HubName", msg.command);
 	}
+	
+	@Test
+	public void testParse_message_hello() {
+		String msg_s = "$Hello libjdcppclient";
+		DCMessage msg = DCMessage.parse_message(msg_s.getBytes());
+		assertEquals("libjdcppclient", msg.hello_s);
+		assertEquals("Hello", msg.command);
+	}
 
 	@Test
 	public void testParse_message_supports() {

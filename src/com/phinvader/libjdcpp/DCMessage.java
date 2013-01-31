@@ -90,8 +90,7 @@ public class DCMessage {
 						- 1);
 				supports = sup_s.split(" ");
 			} else if (command.equals("Hello")) {
-				String hello_s = new String(input, beg + 1, input.length - beg
-						- 1);
+				hello_s = new String(input, beg + 1, input.length - beg - 1);
 			} else if (command.equals("MyINFO")) {
 				myinfo = new DCUser();
 				DCFunctions.find_next(input, beg, '$');
