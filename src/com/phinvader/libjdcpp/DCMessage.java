@@ -23,6 +23,25 @@ public class DCMessage {
 	/**
 	 * Parses a byte[] array to produce a DCMessage Object.
 	 * 
+	 * sets {@link DCMessage#command} to be the command of recieved message.
+	 * Depending on the message recieved more fields are populated. If parsing
+	 * message was unsuccessful it defaults to a text message and is set in
+	 * msg_s , and command is set to null. List of handled messages: (so far)
+	 * <ul>
+	 * <li>$Lock</li>
+	 * <li>$Key</li>
+	 * <li>$HubName</li>
+	 * <li>$Supports</li>
+	 * <li>$Hello</li>
+	 * <li>$MyINFO</li>
+	 * <li>$Quit</li>
+	 * <li>$HubQuit - this is not part of the protocol but added as a way to
+	 * notify when the hub socket gets cut.</li>
+	 * <li></li>
+	 * <li></li>
+	 * </ul>
+	 * 
+	 * 
 	 * @param input
 	 * @return
 	 * @throws DCMessageParseException
@@ -38,6 +57,7 @@ public class DCMessage {
 	 * 
 	 * @param input
 	 * @throws DCMessageParseExceptionus
+	 * @see {@link DCMessage#parse_message(byte[])}
 	 */
 	public void parse(byte[] input) {
 
@@ -94,13 +114,13 @@ public class DCMessage {
 				seglength[2] = loffset - offsets[2];
 				loffset++;
 				// Speed specifier
-				loffset = DCFunctions.find_next(input, loffset, '$') + 1; // skipping blankspace
+				loffset = DCFunctions.find_next(input, loffset, '$') + 1; // skipping
+																			// blankspace
 				offsets[3] = loffset;
 				loffset = DCFunctions.find_next(input, loffset, '$');
 				seglength[3] = loffset - offsets[3];
 				loffset++;
 				// email
-				//$MyINFO $ALL downloadinghub awesome user123<++ V:0.75,M:A,H:1/0/0,S:5>$ $1\001$asd@asd$8270469159$
 				offsets[4] = loffset;
 				loffset = DCFunctions.find_next(input, loffset, '$');
 				seglength[4] = loffset - offsets[4];
@@ -113,17 +133,20 @@ public class DCMessage {
 					myinfo.nick = new String(input, offsets[1], seglength[1]);
 					myinfo.description = new String(input, offsets[2],
 							seglength[2]);
-					int desc_split_offset = myinfo.description.lastIndexOf('<'); // Split for the tag
-					myinfo.tag = myinfo.description.substring(desc_split_offset);
-					if(myinfo.tag.contains("M:A"))
+					int desc_split_offset = myinfo.description.lastIndexOf('<');
+					// Split for the tag
+					myinfo.tag = myinfo.description
+							.substring(desc_split_offset);
+					if (myinfo.tag.contains("M:A"))
 						myinfo.active = true;
 					else
 						myinfo.active = false;
-					myinfo.description = myinfo.description.substring(0, desc_split_offset);
+					myinfo.description = myinfo.description.substring(0,
+							desc_split_offset);
 					myinfo.connection_speed = new String(input, offsets[3],
 							seglength[3] - 1);
 					myinfo.speed_id = input[offsets[3] + seglength[3] - 1];
-					myinfo.email = new String(input,offsets[4],seglength[4]);
+					myinfo.email = new String(input, offsets[4], seglength[4]);
 					myinfo.share_size = Long.parseLong(new String(input,
 							offsets[5], seglength[5]));
 				} else {
@@ -133,9 +156,10 @@ public class DCMessage {
 			} else if (command.equals("Version")) {
 			} else if (command.equals("GetNickList")) {
 			} else if (command.equals("ConnectToMe")) {
+			} else if (command.equals("HubQuit")) {
+				// return just command as HubQuit
 			} else if (command.equals("Quit")) {
-				quit_s = new String(input, beg + 1, input.length - beg
-						- 1);
+				quit_s = new String(input, beg + 1, input.length - beg - 1);
 			} else {
 				parse_success = false;
 			}
