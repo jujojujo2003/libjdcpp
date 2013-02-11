@@ -3,8 +3,6 @@ package com.phinvader.libjdcpp;
 import java.net.InetAddress;
 import java.util.ArrayList;
 
-import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
-
 /**
  * 
  * This is the core main class which serves as the DC Client , all operations

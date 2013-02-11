@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StreamTokenizer;
+import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -166,7 +167,13 @@ public class MessageHandler {
 
 	public void send_key(byte[] key) {
 		String msg = "$Key ";
-		msg += new String(key, StandardCharsets.ISO_8859_1);
+		//msg += new String(key, StandardCharsets.ISO_8859_1);
+		try {
+			msg += new String(key, "ISO_8859_1");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		send_msg(msg);
 	}
 

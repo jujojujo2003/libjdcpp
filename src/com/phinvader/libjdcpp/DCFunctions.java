@@ -64,11 +64,13 @@ public class DCFunctions {
 	 * @return
 	 */
 	public static byte[] toBytes(String s) {
-		return s.getBytes(StandardCharsets.ISO_8859_1);
-		/*
-		 * byte[] ret = new byte[s.length()]; for (int i = 0; i < s.length();
-		 * i++) ret[i] = (byte) s.charAt(i); return ret;
-		 */
+		// return s.getBytes(StandardCharsets.ISO_8859_1);
+
+		byte[] ret = new byte[s.length()];
+		for (int i = 0; i < s.length(); i++)
+			ret[i] = (byte) s.charAt(i);
+		return ret;
+
 	}
 
 	/**
