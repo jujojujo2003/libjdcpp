@@ -19,6 +19,9 @@ public class DCMessage {
 	String hello_s;
 	DCUser myinfo;
 	String quit_s;
+	String host_name; // ConnectToMe
+	int port_number; // ConnectToMe
+	String connect_nick; // ConnectToMe
 
 	/**
 	 * Parses a byte[] array to produce a DCMessage Object.
@@ -161,10 +164,15 @@ public class DCMessage {
 					} else {
 						parse_success = false;
 					}
-				} else if (command.equals("ValidateNick")) {
-				} else if (command.equals("Version")) {
-				} else if (command.equals("GetNickList")) {
+				//} else if (command.equals("ValidateNick")) {
+				//} else if (command.equals("Version")) {
+				//} else if (command.equals("GetNickList")) {
 				} else if (command.equals("ConnectToMe")) {
+					String conn_str = new String(input, beg + 1, input.length - beg - 1);
+					connect_nick = conn_str.split("\\s")[0];
+					host_name = conn_str.split("\\s")[1];
+					port_number = Integer.parseInt(host_name.split(":")[1]);
+					host_name = host_name.split(":")[0];
 				} else if (command.equals("HubQuit")) {
 					quit_s = new String(input, beg + 1, input.length - beg - 1);
 					// return just command as HubQuit
@@ -211,6 +219,8 @@ public class DCMessage {
 			desc += quit_s;
 		} else if (command.equals("Quit")) {
 			desc += quit_s;
+		} else if (command.equals("ConnectToMe")) {
+			desc += connect_nick + " " + host_name + ":" + port_number;
 		}
 
 		return desc;

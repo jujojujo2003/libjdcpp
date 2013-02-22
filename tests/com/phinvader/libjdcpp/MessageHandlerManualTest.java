@@ -15,6 +15,8 @@ public class MessageHandlerManualTest {
 		Scanner sc = new Scanner(System.in);
 		String host = args[0];
 		int port = 411;
+		if(args.length > 1)
+			port = Integer.parseInt(args[1]);
 		DCUser myuser = new DCUser();
 		myuser.nick = "libjdcpptest";
 		try {

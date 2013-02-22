@@ -94,5 +94,14 @@ public class DCMessageTest {
 		assertEquals("Quit", msg.command);
 		assertEquals("someuser123", msg.quit_s);
 	}
+	@Test
+	public void testParse_message_connect_to_me() {
+		String msg_s = "$ConnectToMe libjdcpptest 1.2.3.4:60355";
+		DCMessage msg = DCMessage.parse_message(msg_s.getBytes());
+		assertEquals("ConnectToMe", msg.command);
+		assertEquals("libjdcpptest", msg.connect_nick);
+		assertEquals("1.2.3.4", msg.host_name);
+		assertEquals(60355, msg.port_number);
+	}
 
 }
