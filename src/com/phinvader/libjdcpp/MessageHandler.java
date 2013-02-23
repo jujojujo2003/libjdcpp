@@ -206,7 +206,10 @@ public class MessageHandler {
 		String dir = "Download";
 		if(!download)
 			dir = "Upload";
-		send_msg("$Direction " + dir + random_v);
+		send_msg("$Direction " + dir + " " + random_v);
+	}
+	public void send_revconnect(DCUser mynick, DCUser connecting_nick) {
+		send_msg("$RevConnectToMe " + mynick.nick + " " + connecting_nick.nick);
 	}
 
 	public void send_myinfo(DCUser user) {

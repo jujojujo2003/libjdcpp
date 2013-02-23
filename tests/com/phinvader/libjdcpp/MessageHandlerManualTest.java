@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class MessageHandlerManualTest {
@@ -15,7 +16,7 @@ public class MessageHandlerManualTest {
 		Scanner sc = new Scanner(System.in);
 		String host = args[0];
 		int port = 411;
-		if(args.length > 1)
+		if (args.length > 1)
 			port = Integer.parseInt(args[1]);
 		DCUser myuser = new DCUser();
 		myuser.nick = "libjdcpptest";
@@ -44,6 +45,11 @@ public class MessageHandlerManualTest {
 			handler.send_version();
 			handler.send_getnicklist();
 			handler.send_myinfo(myuser);
+
+			DCUser dummy_user = new DCUser();
+			dummy_user.nick = "asd3";
+			handler.send_revconnect(myuser, dummy_user);
+			
 			while (true) {
 				DCMessage msg = handler.getNextMessage();
 				if (msg.command != null && msg.command.equals("HubQuit"))
