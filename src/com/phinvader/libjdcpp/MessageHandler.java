@@ -55,10 +55,11 @@ public class MessageHandler {
 					}
 				} catch (Exception e) { // IOException InterruptedException
 					try {
-						addMessage(DCMessage.parse_message(("$HubQuit " + e.toString())
-								.getBytes()));
+						addMessage(DCMessage.parse_message(("$HubQuit " + e
+								.toString()).getBytes()));
 						s.close();
-						//TODO remove this stacktrace. Added only for debugging purposes
+						// TODO remove this stacktrace. Added only for debugging
+						// purposes
 						e.printStackTrace();
 					} catch (InterruptedException | IOException e1) {
 					}
@@ -167,7 +168,7 @@ public class MessageHandler {
 
 	public void send_key(byte[] key) {
 		String msg = "$Key ";
-		//msg += new String(key, StandardCharsets.ISO_8859_1);
+		// msg += new String(key, StandardCharsets.ISO_8859_1);
 		try {
 			msg += new String(key, "ISO_8859_1");
 		} catch (UnsupportedEncodingException e) {
@@ -190,6 +191,24 @@ public class MessageHandler {
 		send_msg("$GetNickList");
 	}
 
+	public void send_mynick(DCUser user) {
+		send_msg("$MyNick " + user.nick);
+	}
+
+	public void send_lock() {
+		String s = "$Lock " + DCConstants.default_lock + " Pk="
+				+ DCConstants.default_pk;
+		send_msg(s);
+	}
+
+	public void send_direction(boolean download) {
+		int random_v = (int) (Math.random() * 65535);
+		String dir = "Download";
+		if(!download)
+			dir = "Upload";
+		send_msg("$Direction " + dir + random_v);
+	}
+
 	public void send_myinfo(DCUser user) {
 		DCUser myuser = new DCUser(user);
 		if (myuser.description == null)
@@ -198,10 +217,10 @@ public class MessageHandler {
 			myuser.tag = "<++ V:" + DCConstants.version_short + ","
 					+ (myuser.active ? "M:A" : "M:P") + "," + "H:1/0/0,S:3>";
 		}
-		if(myuser.connection_speed == null) {
+		if (myuser.connection_speed == null) {
 			myuser.connection_speed = "1";
 		}
-		if(myuser.email == null) {
+		if (myuser.email == null) {
 			myuser.email = "";
 		}
 		String msg = "$MyINFO $ALL ";
