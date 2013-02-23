@@ -103,5 +103,18 @@ public class DCMessageTest {
 		assertEquals("1.2.3.4", msg.host_name);
 		assertEquals(60355, msg.port_number);
 	}
-
+	@Test
+	public void testParse_message_direction() {
+		String msg_s = "$Direction Upload 29798";
+		DCMessage msg = DCMessage.parse_message(msg_s.getBytes());
+		assertEquals("Direction", msg.command);
+		assertEquals(msg.dir_download, false);
+		assertEquals(msg.dir_no, 29798);
+		msg_s = "$Direction Download 21128";
+		msg = DCMessage.parse_message(msg_s.getBytes());
+		assertEquals("Direction", msg.command);
+		assertEquals(msg.dir_download, true);
+		assertEquals(msg.dir_no, 21128);
+		
+	}
 }

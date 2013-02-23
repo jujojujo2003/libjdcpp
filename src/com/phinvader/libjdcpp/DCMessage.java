@@ -22,6 +22,8 @@ public class DCMessage {
 	String host_name; // ConnectToMe
 	int port_number; // ConnectToMe
 	String connect_nick; // ConnectToMe
+	boolean dir_download; // If direction is download in a $Direction message
+	int dir_no;
 
 	/**
 	 * Parses a byte[] array to produce a DCMessage Object.
@@ -162,11 +164,17 @@ public class DCMessage {
 						myinfo.share_size = Long.parseLong(new String(input,
 								offsets[5], seglength[5]));
 					} else {
-						parse_success = false;
+						parse_success = false;	
 					}
 				//} else if (command.equals("ValidateNick")) {
 				//} else if (command.equals("Version")) {
 				//} else if (command.equals("GetNickList")) {
+				} else if (command.equals("Direction")) {
+					String dir_str[] = new String(input, beg + 1, input.length - beg - 1).split("\\s");
+					dir_download = true;
+					if(!dir_str[0].equals("Download"))
+						dir_download = false;
+					dir_no = Integer.parseInt(dir_str[1]);
 				} else if (command.equals("ConnectToMe")) {
 					String conn_str = new String(input, beg + 1, input.length - beg - 1);
 					connect_nick = conn_str.split("\\s")[0];
