@@ -32,4 +32,10 @@ public class DCUser {
 	}
 	public DCUser() {
 	}
+	public String toString() {
+		String ret = nick;
+		ret += " Tag:"+tag;
+		ret += " share_size:"+share_size;
+		return ret;
+	}
 }
