@@ -15,9 +15,7 @@ public class MessageHandlerManualClientClientTest {
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
 		String host = args[0];
-		int port = 411;
-		if (args.length > 1)
-			port = Integer.parseInt(args[1]);
+		int port = Integer.parseInt(args[1]);
 		String fname="files.xml";
 		if (args.length > 2)
 			fname = args[2];
@@ -54,9 +52,11 @@ public class MessageHandlerManualClientClientTest {
 			handler.send_direction(true);
 			handler.send_key(DCFunctions.convert_lock_to_key(rlock.lock_s
 					.getBytes()));
+			System.out.println("Requesting :"+"$Get "+fname+"$1");
 			handler.send_msg("$Get "+fname+"$1");
 			DCMessage msg2 = handler.getNextMessage();
 			System.out.println(msg2.toString());
+			handler.dump_remaining_stream("fileoutdump",msg2.file_length);
 			handler.send_msg("$Send");
 			while (true) {
 				DCMessage msg = handler.getNextMessage();
