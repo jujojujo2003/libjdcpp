@@ -1,15 +1,13 @@
 package com.phinvader.libjdcpp;
 
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.Reader;
-import java.io.StreamTokenizer;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Semaphore;
@@ -27,6 +25,31 @@ public class MessageHandler {
 	OutputStream os;
 	private final ArrayBlockingQueue<DCMessage> message_queue;
 	Thread input_handler_thread;
+	private long dump_bytes_limit = 0;
+	private String dump_stream_file = null; // Once this is set to not null
+											// start dumping the stream to file
+	private long dump_bytes = 0;
+
+	/**
+	 * Start dumping the rest of the input stream to a file
+	 * Stop after dumping no_bytes of data.
+	 * 
+	 * @param file_name
+	 * @param no_bytes
+	 */
+	public void dump_remaining_stream(String file_name,long no_bytes) {
+		dump_stream_file = file_name;
+		dump_bytes_limit = no_bytes;
+	}
+
+	/**
+	 * Get number of bytes dumped to file so far.
+	 * 
+	 * @return
+	 */
+	public long get_dumped_bytes() {
+		return dump_bytes;
+	}
 
 	/**
 	 * Create a new Message Handler with the Socket s. It spawns a thread to
@@ -43,16 +66,44 @@ public class MessageHandler {
 			public void run() {
 				try {
 					InputStream in = s.getInputStream();
-					Reader r = new BufferedReader(new InputStreamReader(in));
-					StreamTokenizer st = new StreamTokenizer(r);
-					st.wordChars('\u0000', '|' - 1);
-					st.wordChars('|' + 1, '\u00FF');
-					st.whitespaceChars('|', '|');
-					while (st.nextToken() == StreamTokenizer.TT_WORD) {
-						DCMessage msg = DCMessage.parse_message(st.sval
-								.getBytes());
-						addMessage(msg);
+					BufferedInputStream bin = new BufferedInputStream(in);
+					byte[] buf = new byte[(int) DCConstants.data_chunk_size];
+					int buf_read_sz = 0;
+					while (true) {
+						bin.mark((int) (DCConstants.data_chunk_size + 10));
+						buf_read_sz = bin.read(buf);
+						if (buf_read_sz == -1)
+							break; // EOF
+						if (dump_stream_file == null) {
+							int o = DCFunctions.find_next(buf, 0, '|');
+							byte[] msg = new byte[o];
+							System.arraycopy(buf, 0, msg, 0, o);
+							addMessage(DCMessage.parse_message(msg));
+							bin.reset();
+							bin.skip(o + 1);
+						} else {
+							bin.reset();
+							break;
+						}
 					}
+					if (buf_read_sz != -1 && dump_stream_file != null) {
+						dump_bytes = 0;
+						FileOutputStream output_file = new FileOutputStream(
+								dump_stream_file);
+						byte[] write_buffer = new byte[DCConstants.io_buffer_size];
+						while (true) {
+							int s = bin.read(write_buffer);
+							if (s == -1)
+								break;
+							output_file.write(write_buffer, 0, s);
+							dump_bytes += s;
+							if(dump_bytes >= dump_bytes_limit)
+								break;
+						}
+						output_file.close();
+					}
+					bin.close();
+					addMessage(DCMessage.parse_message("$HubQuit".getBytes()));
 				} catch (Exception e) { // IOException InterruptedException
 					try {
 						addMessage(DCMessage.parse_message(("$HubQuit " + e
@@ -204,10 +255,11 @@ public class MessageHandler {
 	public void send_direction(boolean download) {
 		int random_v = (int) (Math.random() * 65535);
 		String dir = "Download";
-		if(!download)
+		if (!download)
 			dir = "Upload";
 		send_msg("$Direction " + dir + " " + random_v);
 	}
+
 	public void send_revconnect(DCUser mynick, DCUser connecting_nick) {
 		send_msg("$RevConnectToMe " + mynick.nick + " " + connecting_nick.nick);
 	}

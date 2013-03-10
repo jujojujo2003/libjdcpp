@@ -13,7 +13,7 @@ public class DCConstants {
 	public static String default_pk = "Pk=libjdcppv1.0----";
 
 	/**
-	 * This is the number of bytes per chunk sent while transferring files over
+	 * This is the maximum number of bytes per chunk sent while transferring files over
 	 * the TCP connection. (As specified by the DC protocol)
 	 */
 	public static long data_chunk_size = 40906;
@@ -23,4 +23,6 @@ public class DCConstants {
 	 * will block and wait till the message Queue is freed
 	 */
 	public static int max_message_queue_size = 1024;
+	
+	public static int io_buffer_size = 65536;
 }

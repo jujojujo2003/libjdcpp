@@ -24,7 +24,7 @@ public class DCMessage {
 	String connect_nick; // ConnectToMe
 	boolean dir_download; // If direction is download in a $Direction message
 	int dir_no;
-	int file_length;
+	long file_length;
 
 	/**
 	 * Parses a byte[] array to produce a DCMessage Object.
@@ -165,27 +165,34 @@ public class DCMessage {
 						myinfo.share_size = Long.parseLong(new String(input,
 								offsets[5], seglength[5]));
 					} else {
-						parse_success = false;	
+						parse_success = false;
 					}
-				//} else if (command.equals("ValidateNick")) {
-				//} else if (command.equals("Version")) {
-				//} else if (command.equals("GetNickList")) {
-				}else if(command.equals("FileLength")) {
-					file_length = Integer.parseInt(new String(input, beg + 1, input.length - beg - 1));
+					// } else if (command.equals("ValidateNick")) {
+					// } else if (command.equals("Version")) {
+					// } else if (command.equals("GetNickList")) {
+				} else if (command.equals("FileLength")) {
+					file_length = Long.parseLong(new String(input, beg + 1,
+							input.length - beg - 1));
 				} else if (command.equals("Direction")) {
-					String dir_str[] = new String(input, beg + 1, input.length - beg - 1).split("\\s");
+					String dir_str[] = new String(input, beg + 1, input.length
+							- beg - 1).split("\\s");
 					dir_download = true;
-					if(!dir_str[0].equals("Download"))
+					if (!dir_str[0].equals("Download"))
 						dir_download = false;
 					dir_no = Integer.parseInt(dir_str[1]);
 				} else if (command.equals("ConnectToMe")) {
-					String conn_str = new String(input, beg + 1, input.length - beg - 1);
+					String conn_str = new String(input, beg + 1, input.length
+							- beg - 1);
 					connect_nick = conn_str.split("\\s")[0];
 					host_name = conn_str.split("\\s")[1];
 					port_number = Integer.parseInt(host_name.split(":")[1]);
 					host_name = host_name.split(":")[0];
 				} else if (command.equals("HubQuit")) {
-					quit_s = new String(input, beg + 1, input.length - beg - 1);
+					if (input.length - beg - 1 > 0)
+						quit_s = new String(input, beg + 1, input.length - beg
+								- 1);
+					else
+						quit_s = "";
 					// return just command as HubQuit
 				} else if (command.equals("Quit")) {
 					quit_s = new String(input, beg + 1, input.length - beg - 1);
@@ -202,6 +209,7 @@ public class DCMessage {
 		} catch (Exception e) {
 			// TODO Remove This debugging piece
 			command = null;
+			e.printStackTrace();
 			msg_s = "ParseFail : " + e.toString();
 			msg_s += "\n For:" + new String(input);
 		}
@@ -234,10 +242,12 @@ public class DCMessage {
 			desc += connect_nick + " " + host_name + ":" + port_number;
 		} else if (command.equals("Direction")) {
 			String s = "Download";
-			if(!dir_download)
+			if (!dir_download)
 				s = "Upload";
 			s += " " + dir_no;
 			desc += s;
+		} else if (command.equals("FileLength")) {
+			desc += Long.toString(file_length);
 		}
 
 		return desc;
