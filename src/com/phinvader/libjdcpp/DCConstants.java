@@ -10,7 +10,7 @@ public class DCConstants {
 	public static String version = "libjdcpp v1.0";
 	public static String version_short = "1.0";
 	public static String default_lock = "LIBJDCPPDOESNOTKNOWWHATLOCKTOGIVEU";
-	public static String default_pk = "Pk=libjdcppv1.0----";
+	public static String default_pk = "libjdcppv1.0----";
 
 	/**
 	 * This is the maximum number of bytes per chunk sent while transferring files over
