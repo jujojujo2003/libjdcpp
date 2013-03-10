@@ -209,7 +209,6 @@ public class DCMessage {
 		} catch (Exception e) {
 			// TODO Remove This debugging piece
 			command = null;
-			e.printStackTrace();
 			msg_s = "ParseFail : " + e.toString();
 			msg_s += "\n For:" + new String(input);
 		}

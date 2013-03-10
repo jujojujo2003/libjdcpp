@@ -31,13 +31,13 @@ public class MessageHandler {
 	private long dump_bytes = 0;
 
 	/**
-	 * Start dumping the rest of the input stream to a file
-	 * Stop after dumping no_bytes of data.
+	 * Start dumping the rest of the input stream to a file Stop after dumping
+	 * no_bytes of data.
 	 * 
 	 * @param file_name
 	 * @param no_bytes
 	 */
-	public void dump_remaining_stream(String file_name,long no_bytes) {
+	public void dump_remaining_stream(String file_name, long no_bytes) {
 		dump_stream_file = file_name;
 		dump_bytes_limit = no_bytes;
 	}
@@ -97,7 +97,7 @@ public class MessageHandler {
 								break;
 							output_file.write(write_buffer, 0, s);
 							dump_bytes += s;
-							if(dump_bytes >= dump_bytes_limit)
+							if (dump_bytes >= dump_bytes_limit)
 								break;
 						}
 						output_file.close();
@@ -135,6 +135,10 @@ public class MessageHandler {
 	 * Interrupts the input thread and tries to close the socket connection
 	 */
 	public void close() {
+		try {
+			tcp_scoket.close();
+		} catch (IOException e) {
+		}
 		input_handler_thread.interrupt();
 	}
 
@@ -262,6 +266,11 @@ public class MessageHandler {
 
 	public void send_revconnect(DCUser mynick, DCUser connecting_nick) {
 		send_msg("$RevConnectToMe " + mynick.nick + " " + connecting_nick.nick);
+	}
+
+	public void send_connecttome(DCUser mynick, String host, int port) {
+		send_msg("$ConnectToMe " + mynick.nick + " " + host + ":"
+				+ Integer.toString(port));
 	}
 
 	public void send_myinfo(DCUser user) {
