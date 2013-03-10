@@ -13,12 +13,14 @@ public class MessageHandlerManualClientClientTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
 		String host = args[0];
 		int port = Integer.parseInt(args[1]);
 		String fname="files.xml";
 		if (args.length > 2)
 			fname = args[2];
+		String save_file_name = "fileoutdump";
+		if (args.length > 3)
+			save_file_name = args[3];
 		DCUser myuser = new DCUser();
 		myuser.nick = "libjdcpptest";
 		try {
@@ -39,6 +41,8 @@ public class MessageHandlerManualClientClientTest {
 						rdir = msg;
 					else if (msg.command.equals("Key"))
 						rkey = msg;
+					else if(msg.command.equals("HubQuit"))
+						return;
 				}
 			}
 			if (!Arrays.equals(rkey.key_s.getBytes(), DCFunctions
@@ -56,7 +60,12 @@ public class MessageHandlerManualClientClientTest {
 			handler.send_msg("$Get "+fname+"$1");
 			DCMessage msg2 = handler.getNextMessage();
 			System.out.println(msg2.toString());
-			handler.dump_remaining_stream("fileoutdump",msg2.file_length);
+			if(msg2.command==null || !msg2.command.equals("FileLength")) {
+				System.out.println("Quitting..");
+				handler.close();
+				return;
+			}
+			handler.dump_remaining_stream(save_file_name,msg2.file_length);
 			handler.send_msg("$Send");
 			while (true) {
 				DCMessage msg = handler.getNextMessage();
