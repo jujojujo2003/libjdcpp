@@ -100,7 +100,7 @@ public class FileListCollector {
 													// accepting conneciton
 					DCUser conn_nick = new DCUser();
 					conn_nick.nick = nick;
-					handler.send_connecttome(conn_nick, "10.1.34.167", avl_port);
+					handler.send_connecttome(conn_nick, "10.1.34.72", avl_port);
 					Socket s = s_listen.accept();
 					String fname = nick + "." + s.getInetAddress().getHostAddress()
 							+ "." + System.currentTimeMillis();
