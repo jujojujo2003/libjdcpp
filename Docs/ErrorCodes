@@ -1,0 +1,6 @@
+
+Errors in UserHandler :
+    UserHandler Class code : 003
+    
+    003-001 : Nick not found in Quit command
+    003-002 : Add nick Interrupted
