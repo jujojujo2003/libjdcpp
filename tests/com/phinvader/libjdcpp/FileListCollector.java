@@ -163,7 +163,7 @@ public class FileListCollector {
 					nick_q);
 			Thread collecter_thread = new Thread(collector);
 			collecter_thread.start();
-			//handler.send_revconnect(myuser, dummy_user);
+			handler.send_revconnect(myuser, dummy_user);
 			while (true) {
 				DCMessage msg = handler.getNextMessage();
 				if (msg.command != null && msg.command.equals("MyINFO")) {
