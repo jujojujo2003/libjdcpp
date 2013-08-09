@@ -12,20 +12,21 @@ import java.util.concurrent.ArrayBlockingQueue;
 public class BasicClientv1 {
 	
 	
-	public class UserInterface implements Runnable{
+	public class UserInterface {
 
-		public UserInterface(){
-			
+		UsersHandler user_handler;
+		public UserInterface(UsersHandler user_handler){
+			this.user_handler = user_handler;
 		}
-		@Override
-		public void run() {
+		
+		public void doUI() {
 			while(true){
 				System.out.println("1. Show List of users");
 				BufferedReader br  = new BufferedReader(new InputStreamReader(System.in));
 				try {
 					String option = br.readLine();
 					if(option.equals("1")){
-						Iterator<DCMessage> it = UsersHandler.nick_q.iterator();
+						Iterator<DCMessage> it = user_handler.nick_q.iterator();
 						while(it.hasNext()){
 							System.out.println(it.next().myinfo.nick);
 						}
@@ -89,14 +90,19 @@ public class BasicClientv1 {
 			
 			
 			
-			// All activities to be done as threads.
+			MessageRouter mr = new MessageRouter(handler);
+			DCCommand uh = new UsersHandler();
+			mr.subscribe("MyINFO", uh);
+			mr.subscribe("Quit", uh);
+			Thread router = new Thread(mr);
+			router.start();
+			
+			
 			BasicClientv1 context = new BasicClientv1();
-			Thread uiThread = new Thread(context.new UserInterface());
-			uiThread.start();
+			UserInterface uih = context.new UserInterface((UsersHandler) uh);
+			uih.doUI();
 			
 			
-			// Captures packets and redirects to the appropriate handler.			
-			MessageRouter.startRouting(handler);
 			
 			
 			

@@ -59,6 +59,7 @@ public class DCClient {
 	 * @return The list of users registered with this hub.
 	 */
 	public ArrayList<DCUser> get_nick_list() { 
+		
 		return null;
 	}
 }

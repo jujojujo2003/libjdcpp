@@ -5,7 +5,7 @@ public class DCPreferences {
 	public String nick; // DC Nick
 	public long share_size;  //
 	public String server_ip; // IP address of the server
-	
+	public static String self_ip;
 
 	public DCPreferences(String nick, long share_size, String server_ip) {
 		super();
@@ -33,6 +33,11 @@ public class DCPreferences {
 	 */
 	public void load_preferences(String pref_string) {
 		// TODO auto-generated block
+	}
+	
+	
+	public static String get_self_ip(){
+		return self_ip;
 	}
 	
 	// Following are the Getters and Setters for the params in this class
