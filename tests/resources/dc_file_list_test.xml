@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<FileListing Version="1" CID="BD3F77HX5WEIDLT2FOWYAZVZHWAUTVHFI5BQLWA" Base="/" Generator="EiskaltDC++ 2.2.6">
+<Directory Name="abc">
+	<File Name="file1" Size="100" />
+	<File Name="file2" Size="200" />
+	<Directory Name="dir1">
+		<File Name="file3" Size="300" />
+		<Directory Name="dir2">
+		</Directory>
+	</Directory>
+</Directory>
+</FileListing>

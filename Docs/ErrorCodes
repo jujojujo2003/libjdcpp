@@ -12,3 +12,8 @@ Errors in UserHandler :
     003-003 : Socket to Target user, failed.
     003-004 : Socket timed out.
     003-005 : Socket Listener close failed.
+
+Errors in DCFileList:
+    DCFileList Class code : 004
+
+    004-001 : Failed to parse XML
