@@ -37,11 +37,13 @@ public class DCPreferences {
 	
 	
 	public static String get_self_ip(){
+		self_ip = "10.1.34.72";
 		return self_ip;
 	}
 	
 	// Following are the Getters and Setters for the params in this class
 	public String getNick() {
+		nick = "libjdcpp_user2";
 		return nick;
 	}
 

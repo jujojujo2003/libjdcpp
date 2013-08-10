@@ -18,6 +18,7 @@ public class DCMessage {
 	String[] supports; // List of features supported (by $Supports command
 	String hello_s;
 	DCUser myinfo;
+	DCUser hisinfo;
 	String quit_s;
 	String host_name; // ConnectToMe
 	int port_number; // ConnectToMe
@@ -69,6 +70,7 @@ public class DCMessage {
 
 		boolean parse_success = true;
 		try {
+
 			if (input[0] == '$') {
 				int beg = DCFunctions.find_next(input, 1, ' ');
 				if (beg == -1)
@@ -164,7 +166,9 @@ public class DCMessage {
 								seglength[4]);
 						myinfo.share_size = Long.parseLong(new String(input,
 								offsets[5], seglength[5]));
-					} else {
+					}
+
+					else {
 						parse_success = false;
 					}
 					// } else if (command.equals("ValidateNick")) {
@@ -173,6 +177,10 @@ public class DCMessage {
 				} else if (command.equals("FileLength")) {
 					file_length = Long.parseLong(new String(input, beg + 1,
 							input.length - beg - 1));
+				} else if (command.equals("MyNick")) {
+					hisinfo = new DCUser();
+					hisinfo.nick = new String(input, beg + 1, input.length
+							- beg - 1);
 				} else if (command.equals("Direction")) {
 					String dir_str[] = new String(input, beg + 1, input.length
 							- beg - 1).split("\\s");

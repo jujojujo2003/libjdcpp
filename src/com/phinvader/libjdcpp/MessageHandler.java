@@ -108,11 +108,11 @@ public class MessageHandler {
 					try {
 						addMessage(DCMessage.parse_message(("$HubQuit " + e
 								.toString()).getBytes()));
-						s.close();
+						//s.close();
 						// TODO remove this stacktrace. Added only for debugging
 						// purposes
 						e.printStackTrace();
-					} catch (InterruptedException | IOException e1) {
+					} catch (InterruptedException e1) {
 					}
 				}
 			}
@@ -151,6 +151,10 @@ public class MessageHandler {
 	 */
 	public DCMessage getNextMessage() throws InterruptedException {
 		return message_queue.take();
+	}
+	
+	public boolean isEmpty(){
+		return message_queue.isEmpty();
 	}
 
 	/**

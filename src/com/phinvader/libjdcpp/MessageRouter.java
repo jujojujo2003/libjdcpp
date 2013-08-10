@@ -15,7 +15,9 @@ public class MessageRouter implements Runnable {
 
 	MessageHandler handler;
 	HashMap<String, Object> subscriptions = new HashMap<String, Object>();
+	DCPreferences prefs = null;
 
+	
 	/**
 	 * An object is said to subscribe to a COMMAND, when it handles all the
 	 * messages that are recieved with command flag=COMMAND
@@ -47,12 +49,26 @@ public class MessageRouter implements Runnable {
 				continue;
 			}
 
-			DCCommand handle = (DCCommand) subscriptions.get(msg.command);
+			Object o = subscriptions.get(msg.command);
+			DCCommand handle = (DCCommand) o;
 			if (handle != null) {
-				handle.onCommand(msg);
+				handle.onCommand(msg,handler);
+				try{
+					// MyUserHandler should implement a onCallback()
+					// To update UI and notify change in nick_q
+					DCCallback callback_handle = (DCCallback) o;
+					callback_handle.onCallback(msg,handler);
+				}
+				catch(Exception e){
+					DCLogger.Log("ERROR (001-001)");
+				}
+				
+				
 			}
 			else{
 			// If message is not subscribed by any handler, discard.
+				//if(msg.command!=null)
+				//DCLogger.Log(msg.toString());
 				continue;
 			}
 
