@@ -20,6 +20,20 @@ public class BasicClientv1 {
 		}
 	}
 	
+	public class MyBoardMessageHandler implements DCCommand, DCCallback{
+
+		@Override
+		public void onCallback(DCMessage msg, MessageHandler handler) {
+			return;
+		}
+
+		@Override
+		public void onCommand(DCMessage msg, MessageHandler handler) {
+			
+		}
+		
+	}
+	
 	public class MyDCRevconnect extends DCRevconnect implements DCCallback{
 
 		private DCUser target_user;

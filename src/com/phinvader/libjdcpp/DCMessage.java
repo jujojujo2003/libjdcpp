@@ -207,7 +207,11 @@ public class DCMessage {
 				} else {
 					parse_success = false;
 				}
-			} else {
+			} else if(input[0] == '<'){
+				command = "BoardMessage";
+				msg_s = new String(input);
+			}
+			else {
 				parse_success = false;
 			}
 			if (!parse_success) {

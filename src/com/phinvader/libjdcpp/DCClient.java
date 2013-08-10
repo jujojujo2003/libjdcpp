@@ -1,7 +1,12 @@
 package com.phinvader.libjdcpp;
 
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+
+import com.phinvader.libjdcpp.BasicClientv1.MyDCRevconnect;
 
 /**
  * 
@@ -16,7 +21,25 @@ public class DCClient {
 	private String HubName;
 	InetAddress HubAddress;
 	int HubPort;
+	
+	
+	private Socket DCConnectionSocket ;
+	private MessageHandler handler;
+	private UsersHandler uh;
+	private MessageRouter mr;
 
+	
+	
+	
+	public static class NotifyUsersChange extends UsersHandler{
+		/* Just a stub */
+	}
+	
+	public static class PassiveDownloadConnection extends DCRevconnect{
+		/* Just a stub */
+	}
+	
+	
 	/**
 	 * 
 	 * This function is used to connect to a DC-enabled hub on the specified ip
@@ -31,13 +54,72 @@ public class DCClient {
 	 * @param pref
 	 *            - Preference object containing user prefences , such as
 	 *            nickname
+	 * @throws IOException 
+	 * @throws UnknownHostException 
+	 * @throws InterruptedException 
 	 * 
 	 * @see DCClient#connect(String, DCPreferences)
 	 * 
 	 */
-	public void connect(String ip, int port, DCPreferences pref) {
-		// TODO fill code here
+	public void connect(String ip, int port, DCPreferences pref) throws UnknownHostException, IOException, InterruptedException {
+
+		DCConnectionSocket = new Socket(ip, port);
+		handler = new MessageHandler(DCConnectionSocket);
+		DCMessage lock = handler.getNextMessage();
+		DCMessage hubname = handler.getNextMessage();
+		DCLogger.Log("Connected to :" + hubname);
+
+		ArrayList<String> supported_methods = new ArrayList<>();
+		supported_methods.add("NoHello");
+		supported_methods.add("NoGetINFO");
+
+		handler.send_supports(supported_methods);
+		handler.send_key(DCFunctions.convert_lock_to_key(lock.lock_s
+				.getBytes()));
+		
+		handler.send_validatenick(pref.getNick());
+
+		while (true) {
+			DCMessage msg = handler.getNextMessage();
+			DCLogger.Log(msg.toString());
+			if (msg.command != null)
+				if (msg.command.equals("Hello")
+						&& msg.hello_s.equals(pref.getNick()))
+					break;
+		}
+		
+		handler.send_version();
+		handler.send_getnicklist();
+		
+		DCUser myuser = new DCUser();
+		myuser.nick = pref.getNick();
+		
+		handler.send_myinfo(myuser);
 	}
+	
+	public void InitiateDefaultRouting(){
+		mr = new MessageRouter(handler);
+		
+		uh = new UsersHandler();
+		mr.subscribe("MyINFO", uh);
+		mr.subscribe("Quit", uh);
+		Thread routing_thread = new Thread(mr);
+		routing_thread.start();
+	}
+	
+	public void setUserChangeHandler(DCCommand o){
+		mr.subscribe("MyINFO",o);
+		mr.subscribe("Quit", o);
+	}
+	
+	public void setPassiveDownloadHandler(DCUser t, DCUser m, DCCommand o){
+		mr.subscribe("ConnectToMe", o);
+		handler.send_revconnect(m,t);
+	}
+	
+	
+	
+	
 
 	/**
 	 * Connects using the default port 411.
@@ -48,10 +130,13 @@ public class DCClient {
 	 * @param pref
 	 *            - Preference object containing user prefences , such as
 	 *            nickname
+	 * @throws IOException 
+	 * @throws UnknownHostException 
+	 * @throws InterruptedException 
 	 * 
 	 * @see DCClient#connect(String, int, DCPreferences)
 	 */
-	public void connect(String ip, DCPreferences pref) {
+	public void connect(String ip, DCPreferences pref) throws UnknownHostException, IOException, InterruptedException {
 		connect(ip, 411, pref);
 	}
 	
