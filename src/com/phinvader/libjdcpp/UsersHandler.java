@@ -5,6 +5,8 @@ import java.net.Socket;
 import java.util.Iterator;
 import java.util.concurrent.ArrayBlockingQueue;
 
+import com.phinvader.libjdcpp.DCRevconnect.DownloadStatus;
+
 public class UsersHandler implements DCCommand {
 
 	/**
@@ -31,6 +33,7 @@ public class UsersHandler implements DCCommand {
 																					// on
 																					// the
 																					// server.
+	
 
 	/**
 	 * Add a user to the list-of-online-users Updated when there is a MYINFO
@@ -77,7 +80,7 @@ public class UsersHandler implements DCCommand {
 	 * @return
 	 */
 
-	private void download_file(DCUser myuser, Socket s, String fname,
+	private boolean download_file(DCUser myuser, Socket s, String fname,
 			String save_file_name) {
 		// Using REVCONNECT
 		try {
@@ -124,7 +127,7 @@ public class UsersHandler implements DCCommand {
 			if (msg2.command == null || !msg2.command.equals("FileLength")) {
 				DCLogger.Log("Quitting..");
 				handler.close();
-				return;
+				return false;
 			}
 			handler.dump_remaining_stream(save_file_name, msg2.file_length);
 			while (true) {
@@ -137,7 +140,9 @@ public class UsersHandler implements DCCommand {
 			DCLogger.Log("DOwnload Complete");
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
+			return false;
 		}
+		return true;
 	}
 
 	
@@ -150,14 +155,16 @@ public class UsersHandler implements DCCommand {
 	public class downloadManager implements Runnable {
 
 		private Socket s;
+		private DCRevconnect revCon;
 		private DCUser myuser;
 		private String remote_filename;
 		private String local_filename;
 
-		public downloadManager(Socket s, DCUser myuser, String remote_filename,
+		public downloadManager(DCRevconnect revCon, DCUser myuser, String remote_filename,
 				String local_filename) {
 			super();
-			this.s = s;
+			this.revCon = revCon;
+			this.s = revCon.s;
 			this.myuser = myuser;
 			this.remote_filename = remote_filename;
 			this.local_filename = local_filename;
@@ -165,7 +172,12 @@ public class UsersHandler implements DCCommand {
 
 		@Override
 		public void run() {
-			download_file(myuser, s, remote_filename, local_filename);
+			if(download_file(myuser, s, remote_filename, local_filename)){
+				revCon.setCurrentDownloadStatus(DownloadStatus.COMPLETED);
+			}
+			else{
+				revCon.setCurrentDownloadStatus(DownloadStatus.INTERUPTED);
+			}
 
 		}
 

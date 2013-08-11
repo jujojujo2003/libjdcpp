@@ -17,44 +17,14 @@ public class BasicClientv2 {
 	}
 	
 	
-	
-	public class MyDCRevconnect extends DCClient.PassiveDownloadConnection implements DCCallback{
-
-		private DCUser target_user;
-		private DCUser my_user;
-		private DCPreferences prefs;
-		private String local_filename;
-		private String remote_filaname;
-		
-		
-		
-		public MyDCRevconnect(DCUser target_user, DCUser my_user,
-				DCPreferences prefs, String local_filename,
-				String remote_filaname) {
-			super();
-			this.target_user = target_user;
-			this.my_user = my_user;
-			this.prefs = prefs;
-			this.local_filename = local_filename;
-			this.remote_filaname = remote_filaname;
-		}
-
-
+	public class MySearchHandler extends DCClient.BasicCallbackHandler implements DCCallback{
 
 		@Override
 		public void onCallback(DCMessage msg, MessageHandler handler) {
-			//Start download once connection is established.
-			UsersHandler u = new UsersHandler();
-			DCLogger.Log("DCREV Callback");
-			UsersHandler.downloadManager dm = u.new downloadManager(s, my_user, remote_filaname, local_filename);
-			Thread dm_thread = new Thread(dm);
-			dm_thread.start();
-			
+			DCLogger.Log(msg.hisinfo.nick+":::"+msg.file_path.split("\\x005")[0]);
 		}
 		
 	}
-
-	
 	
 	public static void main(String[] args) {
 		DCPreferences prefs = new DCPreferences("libjdcpp_user2", 1000,
@@ -79,6 +49,8 @@ public class BasicClientv2 {
 		client.InitiateDefaultRouting();
 		BasicClientv2 context = new BasicClientv2();
 		MyUsersHandler uh = context.new MyUsersHandler();
+		MySearchHandler sh = context.new MySearchHandler();
+		client.setSearchHandler(sh);
 		client.setUserChangeHandler(uh);
 		
 		DCUser target_user = new DCUser();
@@ -87,8 +59,11 @@ public class BasicClientv2 {
 		String local_filename = "Boo2.xml";
 		String remote_filename = "files.xml";
 		
-		MyDCRevconnect myrc = context.new MyDCRevconnect(target_user, myuser, prefs, local_filename, remote_filename);
+		//MyDCRevconnect myrc = context.new MyDCRevconnect(target_user, myuser, prefs, local_filename, remote_filename);
+		DCClient.PassiveDownloadConnection myrc= new DCClient.PassiveDownloadConnection(target_user, myuser, prefs, local_filename, remote_filename);
 		client.setPassiveDownloadHandler(target_user, myuser, myrc);
+		
+		//client.searchForFile("F?T?0?1?dexter", myuser);
 		
 		
 		

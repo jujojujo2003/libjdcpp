@@ -29,7 +29,7 @@ public class MessageHandler {
 	private String dump_stream_file = null; // Once this is set to not null
 											// start dumping the stream to file
 	private long dump_bytes = 0;
-
+	
 	/**
 	 * Start dumping the rest of the input stream to a file Stop after dumping
 	 * no_bytes of data.
@@ -97,6 +97,7 @@ public class MessageHandler {
 								break;
 							output_file.write(write_buffer, 0, s);
 							dump_bytes += s;
+							
 							if (dump_bytes >= dump_bytes_limit)
 								break;
 						}
@@ -275,6 +276,10 @@ public class MessageHandler {
 	public void send_connecttome(DCUser mynick, String host, int port) {
 		send_msg("$ConnectToMe " + mynick.nick + " " + host + ":"
 				+ Integer.toString(port));
+	}
+	
+	public void send_search(String searchString, DCUser myuser){
+		send_msg("$Search Hub:"+myuser.nick+" "+searchString);
 	}
 
 	public void send_myinfo(DCUser user) {

@@ -26,6 +26,8 @@ public class DCMessage {
 	boolean dir_download; // If direction is download in a $Direction message
 	int dir_no;
 	long file_length;
+	String file_path;
+	String file_signature;
 
 	/**
 	 * Parses a byte[] array to produce a DCMessage Object.
@@ -92,6 +94,23 @@ public class DCMessage {
 
 				} else if (command.equals("Key")) {
 					key_s = new String(input, beg + 1, input.length - beg - 1);
+				} else if (command.equals("SR")) {
+					// Search Result
+					String value = new String(input);
+					String[] values = value.split(" ");
+					String usernick = values[1];
+					String signature = values[values.length - 2];
+					String path = "";
+					for (int i = 2; i < values.length - 2; i++) {
+						path += values[i];
+						if(i!=values.length - 3)
+							path+=" ";
+					}
+					hisinfo = new DCUser();
+					hisinfo.nick = usernick;
+					file_path = path;
+					file_signature = signature;
+
 				} else if (command.equals("HubName")) {
 					hubname_s = new String(input, beg + 1, input.length - beg
 							- 1);
@@ -207,11 +226,10 @@ public class DCMessage {
 				} else {
 					parse_success = false;
 				}
-			} else if(input[0] == '<'){
+			} else if (input[0] == '<') {
 				command = "BoardMessage";
 				msg_s = new String(input);
-			}
-			else {
+			} else {
 				parse_success = false;
 			}
 			if (!parse_success) {
@@ -259,6 +277,9 @@ public class DCMessage {
 			desc += s;
 		} else if (command.equals("FileLength")) {
 			desc += Long.toString(file_length);
+		} else if (command.equals("SR")) {
+			desc += "@" + hisinfo.nick + " " + file_path + " : "
+					+ file_signature;
 		}
 
 		return desc;

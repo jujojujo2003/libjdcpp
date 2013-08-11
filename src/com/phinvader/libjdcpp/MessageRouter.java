@@ -66,9 +66,10 @@ public class MessageRouter implements Runnable {
 				
 			}
 			else{
-			// If message is not subscribed by any handler, discard.
-				//if(msg.command!=null)
-				//DCLogger.Log(msg.toString());
+				
+// If message is not subscribed by any handler, discard.
+//				if(msg.command!=null)
+//				DCLogger.Log(msg.command);
 				
 				continue;
 			}

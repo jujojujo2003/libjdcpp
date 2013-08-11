@@ -7,6 +7,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import com.phinvader.libjdcpp.BasicClientv1.MyDCRevconnect;
+import com.phinvader.libjdcpp.UsersHandler.downloadManager;
 
 /**
  * 
@@ -36,7 +37,23 @@ public class DCClient {
 	}
 	
 	public static class PassiveDownloadConnection extends DCRevconnect{
+
+		public PassiveDownloadConnection(DCUser target_user, DCUser my_user,
+				DCPreferences prefs, String local_filename,
+				String remote_filaname) {
+			super(target_user, my_user, prefs, local_filename, remote_filaname);
+			// TODO Auto-generated constructor stub
+		}
 		/* Just a stub */
+	}
+	
+	public static class BasicCallbackHandler implements DCCommand{
+
+		@Override
+		public void onCommand(DCMessage msg) {
+			/* This is just a stub */
+		}
+		
 	}
 	
 	
@@ -117,6 +134,23 @@ public class DCClient {
 		handler.send_revconnect(m,t);
 	}
 	
+	public void setSearchHandler(DCCommand handler){
+		mr.subscribe("SR", handler);
+	}
+	
+	public void searchForFile(String key, DCUser myuser){
+		handler.send_search(key, myuser);
+	}
+	
+	public void startDownloadingFile(DCRevconnect dcRevconnect, DCUser myuser, String local_filename, String remote_filename){
+		
+		UsersHandler u = new UsersHandler();
+		
+		UsersHandler.downloadManager dm = u.new downloadManager(dcRevconnect, myuser, remote_filename, local_filename);
+		Thread dm_thread = new Thread(dm);
+		dm_thread.start();
+
+	}
 	
 	
 	
