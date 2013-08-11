@@ -12,15 +12,16 @@ public class BasicClientv2 {
 		}
 	}
 	
-	
-	public class MySearchHandler extends DCClient.BasicCallbackHandler implements DCCallback{
+	private class MyBoardMessageHandler implements DCCommand{
 
 		@Override
-		public void onCallback(DCMessage msg) {
-			DCLogger.Log(msg.hisinfo.nick+":::"+msg.file_path.split("\\x005")[0]);
+		public void onCommand(DCMessage msg) {
+			DCLogger.Log("A MESSAGE! "+msg.msg_s);
 		}
 		
 	}
+	
+
 	
 	public static void main(String[] args)  {
 		DCPreferences prefs = new DCPreferences("libjdcpp_user2", 1000,
@@ -44,12 +45,13 @@ public class BasicClientv2 {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		client.InitiateDefaultRouting();
+		client.bootstrap();
 		BasicClientv2 context = new BasicClientv2();
 		
 		MyUserHandler uh = context.new MyUserHandler();
 		client.setCustomUserChangeHandler(uh);
+		DCCommand messageHandler = context.new MyBoardMessageHandler();
+		client.setCustomBoardMessageHandler(messageHandler);
 		
 		DCUser target_user = new DCUser();
 		target_user.nick = "Anecdote";
@@ -59,12 +61,14 @@ public class BasicClientv2 {
 		
 		DCClient.PassiveDownloadConnection myrc= new DCClient.PassiveDownloadConnection(target_user, myuser, prefs, local_filename, remote_filename);
 		client.setPassiveDownloadHandler(target_user, myuser, myrc);
+		client.InitiateDefaultRouting();
 		try {
 			Thread.sleep(500);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		
 		DCLogger.Log("DOWNLOAD SOFAR : "+Long.toString(myrc.getDownloadBytes()));
 		DCLogger.Log("DOWNLOAD TOTAL EXPECTED: "+Long.toString(myrc.getDownloadFileFullSize()));

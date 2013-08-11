@@ -32,6 +32,8 @@ public class DCClient {
 		return downloadHandler.getDownloadStatus();
 	}
 	
+
+	
 	public long getDownloadFileFullSize(){
 		return downloadHandler.getDownloadFileFullSize();
 	}
@@ -62,6 +64,7 @@ public class DCClient {
 		}
 		
 	}
+	
 	
 	
 	/**
@@ -121,8 +124,11 @@ public class DCClient {
 		handler.send_myinfo(myuser);
 	}
 	
-	public void InitiateDefaultRouting(){
+	public void bootstrap(){
 		mr = new MessageRouter(handler);
+	}
+	
+	public void InitiateDefaultRouting(){
 		
 		mainUserHandler = new UsersHandler();
 		mr.subscribe("MyINFO", mainUserHandler);
@@ -151,6 +157,14 @@ public class DCClient {
 	}
 	public void setCustomSearchHandler(DCCommand handler){
 		mr.customSubscribe("SR", handler);
+	}
+	
+	public void setCustomBoardMessageHandler(DCCommand handler){
+		mr.subscribe("BoardMessage", handler);
+	}
+	
+	public void setCustomRawHandler(String command, DCCommand handler){
+		mr.subscribe(command, handler);
 	}
 	
 	public void searchForFile(String key, DCUser myuser){
