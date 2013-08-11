@@ -7,7 +7,7 @@ public class BasicClientv2 {
 	private class MyUsersHandler extends DCClient.NotifyUsersChange implements DCCallback{
 
 		@Override
-		public void onCallback(DCMessage msg, MessageHandler handler) {
+		public void onCallback(DCMessage msg) {
 			System.out.println("CALLBACK TIME : "+msg.toString());
 		}
 				
@@ -17,7 +17,7 @@ public class BasicClientv2 {
 	public class MySearchHandler extends DCClient.BasicCallbackHandler implements DCCallback{
 
 		@Override
-		public void onCallback(DCMessage msg, MessageHandler handler) {
+		public void onCallback(DCMessage msg) {
 			DCLogger.Log(msg.hisinfo.nick+":::"+msg.file_path.split("\\x005")[0]);
 		}
 		

@@ -57,7 +57,7 @@ public class MessageRouter implements Runnable {
 					// MyUserHandler should implement a onCallback()
 					// To update UI and notify change in nick_q
 					DCCallback callback_handle = (DCCallback) o;
-					callback_handle.onCallback(msg,handler);
+					callback_handle.onCallback(msg);
 				}
 				catch(Exception e){
 					DCLogger.Log("ERROR (001-001)");
