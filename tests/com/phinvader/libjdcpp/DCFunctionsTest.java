@@ -1,6 +1,6 @@
 package com.phinvader.libjdcpp;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
 
 import java.nio.charset.StandardCharsets;
 

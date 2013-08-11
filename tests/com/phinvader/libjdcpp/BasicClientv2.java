@@ -1,9 +1,6 @@
 package com.phinvader.libjdcpp;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
-
-import com.phinvader.libjdcpp.UsersHandler.downloadManager;
 
 public class BasicClientv2 {
 	

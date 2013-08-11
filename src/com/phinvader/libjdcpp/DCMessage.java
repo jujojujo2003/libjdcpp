@@ -1,6 +1,5 @@
 package com.phinvader.libjdcpp;
 
-import java.util.ArrayList;
 
 /**
  * This class is a universal container for all DC messages which are transfered

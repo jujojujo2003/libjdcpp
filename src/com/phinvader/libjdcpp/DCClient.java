@@ -6,9 +6,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
-import com.phinvader.libjdcpp.BasicClientv1.MyDCRevconnect;
-import com.phinvader.libjdcpp.UsersHandler.downloadManager;
-
 /**
  * 
  * This is the core main class which serves as the DC Client , all operations

@@ -2,9 +2,7 @@ package com.phinvader.libjdcpp;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class MessageHandlerManualTest {
