@@ -1,11 +1,6 @@
 package com.phinvader.libjdcpp;
 
-import java.io.IOException;
-import java.net.Socket;
-import java.util.Iterator;
-import java.util.concurrent.ArrayBlockingQueue;
-
-import com.phinvader.libjdcpp.DCRevconnect.DownloadStatus;
+import java.util.HashSet;
 
 public class UsersHandler implements DCCommand {
 
@@ -16,16 +11,10 @@ public class UsersHandler implements DCCommand {
 	 * To use UserHandler: class MyUserHandler extends UserHandler implements
 	 * DCCallback
 	 * 
-	 * 
 	 * @author madhavan
-	 * 
-	 * @param handler
-	 * @return
-	 * @throws InterruptedException
 	 */
+	public HashSet<DCUser> nick_q = new HashSet<DCUser>();
 
-	public ArrayBlockingQueue<DCUser> nick_q = new ArrayBlockingQueue<>(1024);
-	
 	/**
 	 * Add a user to the list-of-online-users Updated when there is a MYINFO
 	 * Message from the server
@@ -34,8 +23,8 @@ public class UsersHandler implements DCCommand {
 	 * @throws InterruptedException
 	 */
 
-	public void addNick(DCMessage nick) throws InterruptedException {
-		nick_q.put(nick.myinfo);
+	public void addNick(DCUser nick) {
+		nick_q.add(nick);
 		return;
 	}
 
@@ -47,20 +36,14 @@ public class UsersHandler implements DCCommand {
 	 */
 
 	public void deleteNick(String nick) {
-		Iterator<DCUser> it = nick_q.iterator();
-		while (it.hasNext()) {
-			DCUser nick_obj = it.next();
-			if (nick_obj.nick.equals(nick)) {
-				nick_q.remove(nick_obj);
-				// DCLogger.Log("Removing from list : "+nick);
-			}
-		}
-		return;
+		DCUser user = new DCUser();
+		user.nick = nick;
+		nick_q.remove(user);
 	}
-	
+
 	/**
-	 * DCCommand interface override
-	 * Should subscribe to MyInfo and Quit to the router.
+	 * DCCommand interface override Should subscribe to MyInfo and Quit to the
+	 * router.
 	 * 
 	 * @param msg
 	 */
@@ -71,18 +54,10 @@ public class UsersHandler implements DCCommand {
 		if (command.equals("Quit")) {
 			String quit_command = msg.toString();
 			String[] quit_arr = quit_command.split(":");
-			try {
-				String nick_to_delete = quit_arr[1].trim();
-				deleteNick(nick_to_delete);
-			} catch (ArrayIndexOutOfBoundsException e) {
-				DCLogger.Log("ERROR (003-001)");
-			}
+			String nick_to_delete = quit_arr[1].trim();
+			deleteNick(nick_to_delete);
 		} else if (command.equals("MyINFO")) {
-			try {
-				addNick(msg);
-			} catch (InterruptedException e) {
-				DCLogger.Log("ERROR (003-002)");
-			}
+			addNick(msg.myinfo);
 		}
 	}
 

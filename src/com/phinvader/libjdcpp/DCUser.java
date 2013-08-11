@@ -1,5 +1,7 @@
 package com.phinvader.libjdcpp;
 
+import com.sun.org.apache.xpath.internal.operations.Equals;
+
 /**
  * The only compulsory field here is nick. Rest all may be null.
  * Mostly decided by the $MyInfo command as specified at:
@@ -38,4 +40,23 @@ public class DCUser {
 		ret += " share_size:"+share_size;
 		return ret;
 	}
+	
+
+	@Override
+	public boolean equals(Object obj) {
+		// Only comparing Nick Names
+		if (obj == null)
+			return false;
+		if (obj == this)
+			return true;
+		if (!(obj instanceof DCUser))
+			return false;
+		return nick.equals(((DCUser)obj).nick);
+	}
+	@Override
+	public int hashCode() {
+		// Only comparing Nick Names
+		return nick.hashCode();
+	}
+	
 }
