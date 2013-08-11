@@ -28,6 +28,11 @@ public class DCClient {
 	private MessageHandler handler;
 	private UsersHandler uh;
 	private MessageRouter mr;
+	private UsersHandler u ;
+	
+	public long getDownloadBytes(){
+		return u.getDownloadStatus();
+	}
 
 	
 	
@@ -144,7 +149,7 @@ public class DCClient {
 	
 	public void startDownloadingFile(DCRevconnect dcRevconnect, DCUser myuser, String local_filename, String remote_filename){
 		
-		UsersHandler u = new UsersHandler();
+		u = new UsersHandler();
 		
 		UsersHandler.downloadManager dm = u.new downloadManager(dcRevconnect, myuser, remote_filename, local_filename);
 		Thread dm_thread = new Thread(dm);

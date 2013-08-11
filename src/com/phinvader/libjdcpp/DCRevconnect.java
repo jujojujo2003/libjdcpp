@@ -15,11 +15,15 @@ public class DCRevconnect implements DCCommand{
 	private DCPreferences prefs;
 	private String local_filename;
 	private String remote_filaname;
+	private DCClient downloader;
 	public static enum DownloadStatus{
 		UNDEFINED, INITIATED, STARTED,DOWNLOADING,COMPLETED, INTERUPTED, FAILED;
 	}
 	
 	
+	public long getDownloadBytes(){
+		return downloader.getDownloadBytes();
+	}
 	
 	private DownloadStatus currentDownloadStatus = DownloadStatus.UNDEFINED; 
 	
@@ -77,7 +81,7 @@ public class DCRevconnect implements DCCommand{
 			return;
 		}
 		currentDownloadStatus = DownloadStatus.DOWNLOADING;
-		DCClient downloader = new DCClient();
+		downloader = new DCClient();
 		downloader.startDownloadingFile(this, my_user, local_filename, remote_filaname);
 		
 

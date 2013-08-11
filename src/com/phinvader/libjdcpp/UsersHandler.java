@@ -24,17 +24,13 @@ public class UsersHandler implements DCCommand {
 	 * @throws InterruptedException
 	 */
 
-	public ArrayBlockingQueue<DCMessage> nick_q = new ArrayBlockingQueue<>(1024);// This
-																					// Queue
-																					// of
-																					// all
-																					// the
-																					// nicks
-																					// on
-																					// the
-																					// server.
-	
+	public ArrayBlockingQueue<DCMessage> nick_q = new ArrayBlockingQueue<>(1024);
 
+	private MessageHandler handler ;
+	
+	public long getDownloadStatus(){
+		return handler.get_dumped_bytes();
+	}
 	/**
 	 * Add a user to the list-of-online-users Updated when there is a MYINFO
 	 * Message from the server
@@ -86,7 +82,7 @@ public class UsersHandler implements DCCommand {
 		try {
 			DCLogger.Log("Download Started" + s.toString());
 
-			MessageHandler handler = new MessageHandler(s);
+			handler = new MessageHandler(s);
 			handler.send_mynick(myuser);
 			handler.send_lock();
 

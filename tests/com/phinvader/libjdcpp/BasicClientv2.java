@@ -62,7 +62,9 @@ public class BasicClientv2 {
 		//MyDCRevconnect myrc = context.new MyDCRevconnect(target_user, myuser, prefs, local_filename, remote_filename);
 		DCClient.PassiveDownloadConnection myrc= new DCClient.PassiveDownloadConnection(target_user, myuser, prefs, local_filename, remote_filename);
 		client.setPassiveDownloadHandler(target_user, myuser, myrc);
+
 		
+//		DCLogger.Log("DOWNLOAD : "+Long.toString(myrc.getDownloadBytes()));
 		//client.searchForFile("F?T?0?1?dexter", myuser);
 		
 		
