@@ -3,13 +3,6 @@
  */
 package com.phinvader.libjdcpp;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetEncoder;
-import java.nio.charset.StandardCharsets;
-import java.nio.charset.spi.CharsetProvider;
-import java.util.ArrayList;
 
 /**
  * Contains several useful functions , which are required for DC connection

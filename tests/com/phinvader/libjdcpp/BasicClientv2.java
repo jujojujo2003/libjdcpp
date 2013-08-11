@@ -9,6 +9,15 @@ public class BasicClientv2 {
 		@Override
 		public void onCommand(DCMessage msg) {
 			DCLogger.Log("CALLBACK TIME: "+msg.toString());
+				
+	}
+	
+	
+	public class MySearchHandler extends DCClient.BasicCallbackHandler implements DCCallback{
+
+		@Override
+		public void onCallback(DCMessage msg) {
+			DCLogger.Log(msg.hisinfo.nick+":::"+msg.file_path.split("\\x005")[0]);
 		}
 		
 	}

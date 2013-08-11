@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-
 public class DCRevconnect implements DCCommand{
 
 	public Socket s; 
