@@ -52,7 +52,7 @@ public class MessageRouter implements Runnable {
 			Object o = subscriptions.get(msg.command);
 			DCCommand handle = (DCCommand) o;
 			if (handle != null) {
-				handle.onCommand(msg,handler);
+				handle.onCommand(msg);
 				try{
 					// MyUserHandler should implement a onCallback()
 					// To update UI and notify change in nick_q

@@ -11,7 +11,7 @@ public class DCRevconnect implements DCCommand{
 	public Socket s; 
 	
 	@Override
-	public void onCommand(DCMessage msg, MessageHandler handler) {
+	public void onCommand(DCMessage msg) {
 		DCLogger.Log("in DCRevconnect"+msg.toString());
 		String target_identifier = msg.toString().split(" ")[3];
 		String[] ip_port_raw = target_identifier.split(":");

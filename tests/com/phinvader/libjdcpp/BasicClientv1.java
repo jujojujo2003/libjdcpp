@@ -28,7 +28,7 @@ public class BasicClientv1 {
 		}
 
 		@Override
-		public void onCommand(DCMessage msg, MessageHandler handler) {
+		public void onCommand(DCMessage msg) {
 			
 		}
 		

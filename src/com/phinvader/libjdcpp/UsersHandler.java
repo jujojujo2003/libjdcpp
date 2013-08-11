@@ -176,11 +176,10 @@ public class UsersHandler implements DCCommand {
 	 * Should subscribe to MyInfo and Quit to the router.
 	 * 
 	 * @param msg
-	 * @param handler
 	 */
 
 	@Override
-	public void onCommand(DCMessage msg, MessageHandler handler) {
+	public void onCommand(DCMessage msg) {
 		String command = msg.command;
 		if (command.equals("Quit")) {
 			String quit_command = msg.toString();
