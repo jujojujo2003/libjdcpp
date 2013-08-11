@@ -50,6 +50,10 @@ public class MessageHandler {
 	public long get_dumped_bytes() {
 		return dump_bytes;
 	}
+	
+	public long get_filesize(){
+		return dump_bytes_limit;
+	}
 
 	/**
 	 * Create a new Message Handler with the Socket s. It spawns a thread to

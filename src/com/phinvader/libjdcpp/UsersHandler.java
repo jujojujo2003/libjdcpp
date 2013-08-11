@@ -31,6 +31,10 @@ public class UsersHandler implements DCCommand {
 	public long getDownloadStatus(){
 		return handler.get_dumped_bytes();
 	}
+	public long getDownloadFileFullSize(){
+		return handler.get_filesize();
+	}
+	
 	/**
 	 * Add a user to the list-of-online-users Updated when there is a MYINFO
 	 * Message from the server

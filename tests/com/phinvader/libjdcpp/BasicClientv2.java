@@ -26,7 +26,7 @@ public class BasicClientv2 {
 		
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args)  {
 		DCPreferences prefs = new DCPreferences("libjdcpp_user2", 1000,
 				"10.2.16.126");// This is a dummy preferences saver. TODO :
 								// Replace saver with a persistent storage
@@ -63,8 +63,15 @@ public class BasicClientv2 {
 		DCClient.PassiveDownloadConnection myrc= new DCClient.PassiveDownloadConnection(target_user, myuser, prefs, local_filename, remote_filename);
 		client.setPassiveDownloadHandler(target_user, myuser, myrc);
 
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
-//		DCLogger.Log("DOWNLOAD : "+Long.toString(myrc.getDownloadBytes()));
+		DCLogger.Log("DOWNLOAD SOFAR : "+Long.toString(myrc.getDownloadBytes()));
+		DCLogger.Log("DOWNLOAD TOTAL EXPECTED: "+Long.toString(myrc.getDownloadFileFullSize()));
 		//client.searchForFile("F?T?0?1?dexter", myuser);
 		
 		

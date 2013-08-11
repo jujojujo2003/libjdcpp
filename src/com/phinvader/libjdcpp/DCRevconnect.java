@@ -24,6 +24,9 @@ public class DCRevconnect implements DCCommand{
 	public long getDownloadBytes(){
 		return downloader.getDownloadBytes();
 	}
+	public long getDownloadFileFullSize(){
+		return downloader.getDownloadFileFullSize();
+	}
 	
 	private DownloadStatus currentDownloadStatus = DownloadStatus.UNDEFINED; 
 	

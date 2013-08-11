@@ -33,6 +33,10 @@ public class DCClient {
 	public long getDownloadBytes(){
 		return u.getDownloadStatus();
 	}
+	
+	public long getDownloadFileFullSize(){
+		return u.getDownloadFileFullSize();
+	}
 
 	
 	
