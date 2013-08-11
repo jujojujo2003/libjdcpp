@@ -1,6 +1,11 @@
 package com.phinvader.libjdcpp;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * This is the thread that will perpetually listen for MESSAGES (msg) from the
@@ -14,10 +19,10 @@ import java.util.HashMap;
 public class MessageRouter implements Runnable {
 
 	MessageHandler handler;
-	HashMap<String, Object> subscriptions = new HashMap<String, Object>();
+	HashMap<String, List<DCCommand>> subscriptions = new HashMap<String, List<DCCommand>>();
+	HashMap<String, List<DCCommand>> customSubscriptions = new HashMap<String, List<DCCommand>>();
 	DCPreferences prefs = null;
 
-	
 	/**
 	 * An object is said to subscribe to a COMMAND, when it handles all the
 	 * messages that are recieved with command flag=COMMAND
@@ -31,7 +36,24 @@ public class MessageRouter implements Runnable {
 	 * @return
 	 */
 	public boolean subscribe(String command, DCCommand handler) {
-		subscriptions.put(command, handler);
+		List<DCCommand> freshList = new ArrayList<>();
+		if (subscriptions.get(command) == null)
+			subscriptions.put(command,freshList);
+		List<DCCommand> handlersList = subscriptions.get(command);
+		handlersList.add(handler);
+		DCLogger.Log(handlersList.get(0).toString());
+		subscriptions.put(command, handlersList);
+		return true;
+	}
+	
+	public boolean customSubscribe(String command, DCCommand handler) {
+		List<DCCommand> freshList = new ArrayList<>();
+		if (customSubscriptions.get(command) == null)
+			customSubscriptions.put(command,freshList);
+		List<DCCommand> handlersList = customSubscriptions.get(command);
+		handlersList.add(handler);
+		DCLogger.Log(handlersList.get(0).toString());
+		customSubscriptions.put(command, handlersList);
 		return true;
 	}
 
@@ -49,30 +71,35 @@ public class MessageRouter implements Runnable {
 				continue;
 			}
 
-			Object o = subscriptions.get(msg.command);
-			DCCommand handle = (DCCommand) o;
-			if (handle != null) {
-				handle.onCommand(msg);
-				try{
-					// MyUserHandler should implement a onCallback()
-					// To update UI and notify change in nick_q
-					DCCallback callback_handle = (DCCallback) o;
-					callback_handle.onCallback(msg,handler);
-				}
-				catch(Exception e){
-					DCLogger.Log("ERROR (001-001)");
-				}
-				
-				
-			}
-			else{
-				
-// If message is not subscribed by any handler, discard.
-//				if(msg.command!=null)
-//				DCLogger.Log(msg.command);
-				
+			List<DCCommand> listOfSubscriptions = subscriptions
+					.get(msg.command);
+			if (listOfSubscriptions == null) {
 				continue;
+			} else {
+				for (DCCommand dcCommand : listOfSubscriptions) {
+					DCCommand handle = dcCommand;
+					if (handle != null) {
+						handle.onCommand(msg);
+					}
+
+				}
 			}
+			
+			List<DCCommand> listOfCustomSubscriptions = customSubscriptions
+					.get(msg.command);
+			if (listOfCustomSubscriptions == null) {
+				continue;
+			} else {
+				for (DCCommand dcCallback: listOfCustomSubscriptions) {
+					DCCommand handle = dcCallback;
+					if (handle != null) {
+						handle.onCommand(msg);
+					}
+
+				}
+			}
+			
+			
 
 		}
 

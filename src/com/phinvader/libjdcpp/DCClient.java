@@ -5,9 +5,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-
-import com.phinvader.libjdcpp.BasicClientv1.MyDCRevconnect;
-import com.phinvader.libjdcpp.UsersHandler.downloadManager;
+import java.util.Iterator;
 
 /**
  * 
@@ -26,16 +24,16 @@ public class DCClient {
 	
 	private Socket DCConnectionSocket ;
 	private MessageHandler handler;
-	private UsersHandler uh;
+	private UsersHandler mainUserHandler;
 	private MessageRouter mr;
-	private UsersHandler u ;
+	private DCDownloader downloadHandler ;
 	
 	public long getDownloadBytes(){
-		return u.getDownloadStatus();
+		return downloadHandler.getDownloadStatus();
 	}
 	
 	public long getDownloadFileFullSize(){
-		return u.getDownloadFileFullSize();
+		return downloadHandler.getDownloadFileFullSize();
 	}
 
 	
@@ -126,17 +124,22 @@ public class DCClient {
 	public void InitiateDefaultRouting(){
 		mr = new MessageRouter(handler);
 		
-		uh = new UsersHandler();
-		mr.subscribe("MyINFO", uh);
-		mr.subscribe("Quit", uh);
+		mainUserHandler = new UsersHandler();
+		mr.subscribe("MyINFO", mainUserHandler);
+		mr.subscribe("Quit", mainUserHandler);
 		Thread routing_thread = new Thread(mr);
 		routing_thread.start();
 	}
 	
-	public void setUserChangeHandler(DCCommand o){
-		mr.subscribe("MyINFO",o);
-		mr.subscribe("Quit", o);
+	public void setUserChangeHandler(DCCommand handler){
+		mr.subscribe("MyINFO",handler);
+		mr.subscribe("Quit", handler);
 	}
+	public void setCustomUserChangeHandler(DCCommand handler){
+		mr.customSubscribe("MyINFO", handler);
+		mr.customSubscribe("Quit", handler);
+	}
+	
 	
 	public void setPassiveDownloadHandler(DCUser t, DCUser m, DCCommand o){
 		mr.subscribe("ConnectToMe", o);
@@ -146,16 +149,20 @@ public class DCClient {
 	public void setSearchHandler(DCCommand handler){
 		mr.subscribe("SR", handler);
 	}
+	public void setCustomSearchHandler(DCCommand handler){
+		mr.customSubscribe("SR", handler);
+	}
 	
 	public void searchForFile(String key, DCUser myuser){
 		handler.send_search(key, myuser);
 	}
 	
+	
 	public void startDownloadingFile(DCRevconnect dcRevconnect, DCUser myuser, String local_filename, String remote_filename){
 		
-		u = new UsersHandler();
+		downloadHandler = new DCDownloader();
 		
-		UsersHandler.downloadManager dm = u.new downloadManager(dcRevconnect, myuser, remote_filename, local_filename);
+		DCDownloader.downloadManager dm = downloadHandler.new downloadManager(dcRevconnect, myuser, remote_filename, local_filename);
 		Thread dm_thread = new Thread(dm);
 		dm_thread.start();
 
@@ -187,7 +194,11 @@ public class DCClient {
 	 * @return The list of users registered with this hub.
 	 */
 	public ArrayList<DCUser> get_nick_list() { 
-		
-		return null;
+		ArrayList<DCUser> nick_array = new ArrayList<>();
+		Iterator<DCUser> it = mainUserHandler.nick_q.iterator();
+		while(it.hasNext()){
+			nick_array.add(it.next());
+		}
+		return nick_array;
 	}
 }

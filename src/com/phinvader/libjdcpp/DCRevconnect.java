@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import com.phinvader.libjdcpp.UsersHandler.downloadManager;
 
 public class DCRevconnect implements DCCommand{
 
