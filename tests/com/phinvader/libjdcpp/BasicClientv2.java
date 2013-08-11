@@ -9,7 +9,7 @@ public class BasicClientv2 {
 		@Override
 		public void onCommand(DCMessage msg) {
 			DCLogger.Log("CALLBACK TIME: "+msg.toString());
-				
+		}
 	}
 	
 	
