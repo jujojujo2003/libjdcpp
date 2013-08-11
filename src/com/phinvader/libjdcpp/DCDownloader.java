@@ -87,9 +87,11 @@ public class DCDownloader {
 			s.close();
 			handler.close();
 			DCLogger.Log("DOwnload Complete");
-		} catch (IOException | InterruptedException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 		return true;
 	}

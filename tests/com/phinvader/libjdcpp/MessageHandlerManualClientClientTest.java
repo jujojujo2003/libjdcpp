@@ -73,7 +73,10 @@ public class MessageHandlerManualClientClientTest {
 			}
 			s.close();
 			handler.close();
-		} catch (IOException | InterruptedException e) {
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

@@ -36,7 +36,7 @@ public class MessageRouter implements Runnable {
 	 * @return
 	 */
 	public boolean subscribe(String command, DCCommand handler) {
-		List<DCCommand> freshList = new ArrayList<>();
+		List<DCCommand> freshList = new ArrayList<DCCommand>();
 		if (subscriptions.get(command) == null)
 			subscriptions.put(command,freshList);
 		List<DCCommand> handlersList = subscriptions.get(command);
@@ -47,7 +47,7 @@ public class MessageRouter implements Runnable {
 	}
 	
 	public boolean customSubscribe(String command, DCCommand handler) {
-		List<DCCommand> freshList = new ArrayList<>();
+		List<DCCommand> freshList = new ArrayList<DCCommand>();
 		if (customSubscriptions.get(command) == null)
 			customSubscriptions.put(command,freshList);
 		List<DCCommand> handlersList = customSubscriptions.get(command);

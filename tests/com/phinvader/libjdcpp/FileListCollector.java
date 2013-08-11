@@ -57,7 +57,10 @@ public class FileListCollector {
 				}
 				s.close();
 				handler.close();
-			} catch (IOException | InterruptedException e) {
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -109,13 +112,15 @@ public class FileListCollector {
 					s_listen.close();
 					s.close();
 
-				} catch (InterruptedException | IOException e) {
+				} catch (InterruptedException e) {
 					DCLogger.Log(e.toString() + " for nick : " + nick);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 
 		}
-
 	}
 
 	/**
@@ -135,7 +140,7 @@ public class FileListCollector {
 			DCMessage lock = handler.getNextMessage();
 			DCMessage hubname = handler.getNextMessage();
 			DCLogger.Log(hubname.toString());
-			ArrayList<String> sup_list = new ArrayList<>();
+			ArrayList<String> sup_list = new ArrayList<String>();
 			sup_list.add("NoGetINFO");
 			sup_list.add("NoHello");
 			handler.send_supports(sup_list);
@@ -177,7 +182,9 @@ public class FileListCollector {
 			nick_q.put("COLLECTOR_QUIT");
 			s.close();
 			handler.close();
-		} catch (IOException | InterruptedException e) {
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}

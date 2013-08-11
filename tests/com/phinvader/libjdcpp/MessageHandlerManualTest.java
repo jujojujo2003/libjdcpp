@@ -25,7 +25,7 @@ public class MessageHandlerManualTest {
 			System.out.println(lock.toString());
 			DCMessage hubname = handler.getNextMessage();
 			System.out.println(hubname.toString());
-			ArrayList<String> sup_list = new ArrayList<>();
+			ArrayList<String> sup_list = new ArrayList<String>();
 			sup_list.add("NoGetINFO");
 			sup_list.add("NoHello");
 			handler.send_supports(sup_list);
@@ -56,7 +56,10 @@ public class MessageHandlerManualTest {
 			}
 			s.close();
 			handler.close();
-		} catch (IOException | InterruptedException e) {
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

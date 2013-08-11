@@ -93,7 +93,7 @@ public class DCClient {
 		DCMessage hubname = handler.getNextMessage();
 		DCLogger.Log("Connected to :" + hubname);
 
-		ArrayList<String> supported_methods = new ArrayList<>();
+		ArrayList<String> supported_methods = new ArrayList<String>();
 		supported_methods.add("NoHello");
 		supported_methods.add("NoGetINFO");
 
@@ -194,7 +194,7 @@ public class DCClient {
 	 * @return The list of users registered with this hub.
 	 */
 	public ArrayList<DCUser> get_nick_list() { 
-		ArrayList<DCUser> nick_array = new ArrayList<>();
+		ArrayList<DCUser> nick_array = new ArrayList<DCUser>();
 		Iterator<DCUser> it = mainUserHandler.nick_q.iterator();
 		while(it.hasNext()){
 			nick_array.add(it.next());

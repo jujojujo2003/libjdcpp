@@ -36,10 +36,13 @@ public class BasicClientv2 {
 		DCClient client = new DCClient();
 		try {
 			client.connect("10.2.16.126", 411, prefs);
-		} catch (IOException | InterruptedException e) {
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return;
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 		client.InitiateDefaultRouting();

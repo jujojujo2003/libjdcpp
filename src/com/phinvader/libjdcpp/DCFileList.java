@@ -51,7 +51,7 @@ public class DCFileList {
 
 	private static DCFileList build_file_list(Element node, String name) {
 		DCFileList ret = new DCFileList(name, 0);
-		ret.children = new ArrayList<>();
+		ret.children = new ArrayList<DCFileList>();
 		NodeList cl = node.getChildNodes();
 		for (int i = 0; i < cl.getLength(); i++) {
 			Node nd = cl.item(i);
@@ -90,11 +90,16 @@ public class DCFileList {
 			doc.getDocumentElement().normalize();
 			return build_file_list(doc.getDocumentElement(), "/");
 
-		} catch (SAXException | IOException | ParserConfigurationException e) {
-			// TODO Auto-generated catch block
+		} catch (SAXException e) {
 			DCLogger.Log("ERROR - Failed to parse XML : 004-001	 ");
 			e.printStackTrace();
-			return null;
+		} catch (IOException e) {
+			DCLogger.Log("ERROR - Failed to parse XML : 004-001	 ");
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			DCLogger.Log("ERROR - Failed to parse XML : 004-001	 ");
+			e.printStackTrace();
 		}
+		return null;
 	}
 }
