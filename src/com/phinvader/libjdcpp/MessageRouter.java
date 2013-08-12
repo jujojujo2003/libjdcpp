@@ -74,7 +74,7 @@ public class MessageRouter implements Runnable {
 			List<DCCommand> listOfSubscriptions = subscriptions
 					.get(msg.command);
 			if (listOfSubscriptions == null) {
-				continue;
+				
 			} else {
 				for (DCCommand dcCommand : listOfSubscriptions) {
 					DCCommand handle = dcCommand;

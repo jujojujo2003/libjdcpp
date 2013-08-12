@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * 
@@ -25,8 +26,9 @@ public class DCClient {
 	private Socket DCConnectionSocket ;
 	private MessageHandler handler;
 	private UsersHandler mainUserHandler;
-	private MessageRouter mr;
+	private MessageRouter mainMessageRouter;
 	private DCDownloader downloadHandler ;
+	private DCHandlers.BoardMessageHandler mainBoardMessageHandler;
 	
 	public long getDownloadBytes(){
 		return downloadHandler.getDownloadStatus();
@@ -125,46 +127,48 @@ public class DCClient {
 	}
 	
 	public void bootstrap(){
-		mr = new MessageRouter(handler);
+		mainMessageRouter = new MessageRouter(handler);
+		mainUserHandler = new UsersHandler();
+		mainBoardMessageHandler = new DCHandlers.BoardMessageHandler();
 	}
 	
 	public void InitiateDefaultRouting(){
 		
-		mainUserHandler = new UsersHandler();
-		mr.subscribe("MyINFO", mainUserHandler);
-		mr.subscribe("Quit", mainUserHandler);
-		Thread routing_thread = new Thread(mr);
+		mainMessageRouter.subscribe("MyINFO", mainUserHandler);
+		mainMessageRouter.subscribe("Quit", mainUserHandler);
+		mainMessageRouter.subscribe("BoardMessage", mainBoardMessageHandler);
+		Thread routing_thread = new Thread(mainMessageRouter);
 		routing_thread.start();
 	}
 	
 	public void setUserChangeHandler(DCCommand handler){
-		mr.subscribe("MyINFO",handler);
-		mr.subscribe("Quit", handler);
+		mainMessageRouter.subscribe("MyINFO",handler);
+		mainMessageRouter.subscribe("Quit", handler);
 	}
 	public void setCustomUserChangeHandler(DCCommand handler){
-		mr.customSubscribe("MyINFO", handler);
-		mr.customSubscribe("Quit", handler);
+		mainMessageRouter.customSubscribe("MyINFO", handler);
+		mainMessageRouter.customSubscribe("Quit", handler);
 	}
 	
 	
 	public void setPassiveDownloadHandler(DCUser t, DCUser m, DCCommand o){
-		mr.subscribe("ConnectToMe", o);
+		mainMessageRouter.subscribe("ConnectToMe", o);
 		handler.send_revconnect(m,t);
 	}
 	
 	public void setSearchHandler(DCCommand handler){
-		mr.subscribe("SR", handler);
+		mainMessageRouter.subscribe("SR", handler);
 	}
 	public void setCustomSearchHandler(DCCommand handler){
-		mr.customSubscribe("SR", handler);
+		mainMessageRouter.customSubscribe("SR", handler);
 	}
 	
 	public void setCustomBoardMessageHandler(DCCommand handler){
-		mr.subscribe("BoardMessage", handler);
+		mainMessageRouter.subscribe("BoardMessage", handler);
 	}
 	
 	public void setCustomRawHandler(String command, DCCommand handler){
-		mr.subscribe(command, handler);
+		mainMessageRouter.subscribe(command, handler);
 	}
 	
 	public void searchForFile(String key, DCUser myuser){
@@ -214,5 +218,14 @@ public class DCClient {
 			nick_array.add(it.next());
 		}
 		return nick_array;
+	}
+	public List<DCMessage> getBoardMessages(){
+		return mainBoardMessageHandler.getLatestMessages();
+	}
+	public List<DCMessage> getBoardMessages(int limit){
+		return mainBoardMessageHandler.getLatestMessages(limit);
+	}
+	public String getBoardMessageLog(){
+		return mainBoardMessageHandler.toString();
 	}
 }

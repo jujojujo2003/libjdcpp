@@ -26,6 +26,7 @@ public class DCMessage {
 	int dir_no;
 	long file_length;
 	String file_path;
+	long file_size;
 	String file_signature;
 
 	/**
@@ -105,9 +106,11 @@ public class DCMessage {
 						if(i!=values.length - 3)
 							path+=" ";
 					}
+					String[] path_size_raw = path.split("");
 					hisinfo = new DCUser();
 					hisinfo.nick = usernick;
-					file_path = path;
+					file_path = path_size_raw[0];
+					file_size = Long.parseLong(path_size_raw[1]);
 					file_signature = signature;
 
 				} else if (command.equals("HubName")) {
