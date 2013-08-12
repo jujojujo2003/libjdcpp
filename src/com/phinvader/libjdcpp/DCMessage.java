@@ -279,6 +279,8 @@ public class DCMessage {
 		} else if (command.equals("SR")) {
 			desc += "@" + hisinfo.nick + " " + file_path + " : "
 					+ file_signature;
+		} else if (command.equals("BoardMessage")) {
+			desc += msg_s;
 		}
 
 		return desc;
