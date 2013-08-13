@@ -6,7 +6,7 @@ import java.util.List;
 public class DCHandlers {
 	public static class BoardMessageHandler implements DCCommand{
 
-		List<DCMessage> listOfMessages = new ArrayList<>();
+		List<DCMessage> listOfMessages = new ArrayList<DCMessage>();
 		
 		@Override
 		public void onCommand(DCMessage msg) {
