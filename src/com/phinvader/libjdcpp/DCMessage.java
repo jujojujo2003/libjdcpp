@@ -9,25 +9,25 @@ package com.phinvader.libjdcpp;
  * 
  */
 public class DCMessage {
-	String msg_s; // When there is no command and it is just a text message
-	String command;
-	String lock_s; // Lock string in $Lock Command
-	String key_s; // Key string in $Lock command or the key from $Key
-	String hubname_s; // HubName given by $HubName command
-	String[] supports; // List of features supported (by $Supports command
-	String hello_s;
-	DCUser myinfo;
-	DCUser hisinfo;
-	String quit_s;
-	String host_name; // ConnectToMe
-	int port_number; // ConnectToMe
-	String connect_nick; // ConnectToMe
-	boolean dir_download; // If direction is download in a $Direction message
-	int dir_no;
-	long file_length;
-	String file_path;
-	long file_size;
-	String file_signature;
+	public String msg_s; // When there is no command and it is just a text message
+	public String command;
+	public String lock_s; // Lock string in $Lock Command
+	public String key_s; // Key string in $Lock command or the key from $Key
+	public String hubname_s; // HubName given by $HubName command
+	public String[] supports; // List of features supported (by $Supports command
+	public String hello_s;
+	public DCUser myinfo;
+	public DCUser hisinfo;
+	public String quit_s;
+	public String host_name; // ConnectToMe
+	public int port_number; // ConnectToMe
+	public String connect_nick; // ConnectToMe
+	public boolean dir_download; // If direction is download in a $Direction message
+	public int dir_no;
+	public long file_length;
+	public String file_path;
+	public long file_size;
+	public String file_signature;
 
 	/**
 	 * Parses a byte[] array to produce a DCMessage Object.
