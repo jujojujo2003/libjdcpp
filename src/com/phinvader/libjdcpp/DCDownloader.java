@@ -1,11 +1,11 @@
 package com.phinvader.libjdcpp;
 
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.phinvader.libjdcpp.DCConstants.DownloadStatus;
+
 public class DCDownloader {
-	private MessageHandler handler;
 	
 	public static class DownloadQueueEntity{
 		public DCUser target_user;
@@ -20,6 +20,11 @@ public class DCDownloader {
 			this.remote_filename = remote_filename;
 			this.local_filename = local_filename;
 		}
+
+		public Thread thread;
+		public long downloadedSize = 0;
+		public long expectedDownloadSize = 0;
+		public DCConstants.DownloadStatus status;
 
 	}
 
@@ -44,16 +49,7 @@ public class DCDownloader {
 		return ret;
 	}
 
-	public int CHECKOUT_TIME_INTERVAL = 10; // Polling Next message, for race
-											// condition
 
-	public long getDownloadStatus() {
-		return handler.get_dumped_bytes();
-	}
-
-	public long getDownloadFileFullSize() {
-		return handler.get_filesize();
-	}
 
 	/**
 	 * 
@@ -67,84 +63,57 @@ public class DCDownloader {
 	 *            - Path where the downloaded file should be saved
 	 * @return
 	 */
-
-	private boolean download_file(DCUser myuser, DCUser target_user, Socket s,
-			String fname, String save_file_name, DCMessage rlock,
+	//
+	private boolean download_file(DownloadQueueEntity entity, DCMessage rlock,
 			MessageHandler handler) {
 		// Using REVCONNECT
-		this.handler = handler;
+		String fname = entity.remote_filename;
+		String save_file_name = entity.local_filename;
 		try {
-
-			// handler = new MessageHandler(s);
-			// handler.send_mynick(myuser);
-			// handler.send_lock();
-
-			int NUMBER_OF_EXPECTED_REPLIES_FROM_SERVER = 4;
-			// Nick, Lock, Direction, Key.
-
-			// DCMessage hisnick = null;
-			// DCMessage rlock = null;
-			// DCMessage key = null;
-			// DCMessage direction = null;
-
-			// DCMessage litmusMessage = null;
-			// // Keep polling till there is a message in the queue
-			// while (litmusMessage == null) {
-			// litmusMessage = handler.checkNextMessage();
-			// Thread.sleep(CHECKOUT_TIME_INTERVAL);
-			// }
-			//
-			// // First message should be MyNick == target_user
-			//
-			// if (litmusMessage.command.equals("MyNick")) {
-			// if (!litmusMessage.hisinfo.nick.equals(target_user.nick)) {
-			// DCLogger.Log("Race condition detected, Evaded.");
-			// return false;
-			// } else {
-			DCLogger.Log("Download Started" + save_file_name);
-			// }
-			// }
-			// for (int i = 0; i < NUMBER_OF_EXPECTED_REPLIES_FROM_SERVER;) {
-			// DCMessage msg = handler.getNextMessage();
-			// if (msg.command != null) {
-			// i++;
-			// if (msg.command.equals("MyNick")) {
-			// hisnick = msg;
-			// }
-			// if (msg.command.equals("Lock")) {
-			// rlock = msg;
-			// }
-			// if (msg.command.equals("Direction")) {
-			// direction = msg;
-			// }
-			// if (msg.command.equals("Key")) {
-			// key = msg;
-			// }
-			// }
-			// }
+			// At this point Handler has been associated with a socket
+			// MyNick and Lock have been sent.
+			// Send Direction and Key
 
 			handler.send_direction(true);
 			handler.send_key(DCFunctions.convert_lock_to_key(rlock.lock_s
 					.getBytes()));
 
+			// Notify target_user about file to download
 			handler.send_msg("$Get " + fname + "$1");
 			DCMessage msg2 = handler.getNextMessage();
+
+			// Request Start Download
 			handler.send_msg("$Send");
+			entity.status = DownloadStatus.INITIATED;
 
 			if (msg2.command == null || !msg2.command.equals("FileLength")) {
-				DCLogger.Log("Quitting..");
+				entity.status = DownloadStatus.FAILED;
 				handler.close();
 				return false;
 			}
+
+			// Update filesize
+			entity.expectedDownloadSize = msg2.file_length;
+
+			// Associate ENTITY to HANDLER to monitor progress
+			// Done esp. for downloadedSize
+			handler.setDownloadEntity(entity);
+
+			// Download Started
+			entity.status = DownloadStatus.STARTED;
 			handler.dump_remaining_stream(save_file_name, msg2.file_length);
 			while (true) {
+				entity.status = DownloadStatus.DOWNLOADING;
 				DCMessage msg = handler.getNextMessage();
 				if (msg.command != null && msg.command.equals("HubQuit"))
 					break;
 			}
-			// s.close();
+
+			// Download COMPLETE
 			handler.close();
-			DCLogger.Log("DOwnload Complete" + save_file_name);
+			entity.status = DownloadStatus.COMPLETED;
+			DCLogger.Log("Download Complete" + save_file_name);
+
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -161,40 +130,22 @@ public class DCDownloader {
 
 	public class downloadManager implements Runnable {
 
-		private Socket s;
-		private DCRevconnect revCon;
-		private DCUser myuser;
-		private String remote_filename;
-		private String local_filename;
-		private DCUser target_user;
-		private DCClient client;
 		private DCMessage rlock;
 		private MessageHandler messageHandler;
+		private DownloadQueueEntity requestEntity;
 
-		public downloadManager(DCUser myuser,
-				DCUser target_user, String remote_filename,
- String local_filename, DCMessage rlock,
+		public downloadManager(DownloadQueueEntity requestEntity,
+				DCMessage rlock,
 				MessageHandler handler) {
 			super();
-			// this.revCon = revCon;
-			// this.s = revCon.s;
-			this.myuser = myuser;
-			this.remote_filename = remote_filename;
-			this.local_filename = local_filename;
-			this.target_user = target_user;
-			this.client = client;
 			this.rlock = rlock;
 			this.messageHandler = handler;
+			this.requestEntity = requestEntity;
 		}
 
 		@Override
 		public void run() {
-			if (download_file(myuser, target_user, s, remote_filename,
-					local_filename, rlock, messageHandler)) {
-				// revCon.setCurrentDownloadStatus(DownloadStatus.COMPLETED);
-			} else {
-				// revCon.setCurrentDownloadStatus(DownloadStatus.INTERUPTED);
-			}
+			download_file(requestEntity, rlock, messageHandler);
 
 		}
 

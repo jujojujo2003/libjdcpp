@@ -24,7 +24,7 @@ public class BasicClientv2 {
 
 		@Override
 		public void onCommand(DCMessage msg) {
-			DCLogger.Log("SEARCH " + msg.file_path);
+			// DCLogger.Log("SEARCH " + msg.file_path);
 		}
 
 	}
@@ -69,12 +69,23 @@ public class BasicClientv2 {
 		DCClient.PassiveDownloadConnection myrc = new DCClient.PassiveDownloadConnection(
 				target_user, myuser, prefs, local_filename, remote_filename,
 				client);
+		DCDownloader.DownloadQueueEntity e3 = null;
 		try {
-			client.startPassiveDownload(myrc, 1000);
+			e3 = client.startPassiveDownload(myrc, 1000);
 		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		DCLogger.Log(Long.toString(e3.downloadedSize));
+		DCLogger.Log(Long.toString(e3.expectedDownloadSize));
 
 		DCUser target_user2 = new DCUser();
 		target_user2.nick = "arthur";
@@ -84,7 +95,7 @@ public class BasicClientv2 {
 				client);
 
 		try {
-			client.startPassiveDownload(myrc2);
+			e3 = client.startPassiveDownload(myrc2);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

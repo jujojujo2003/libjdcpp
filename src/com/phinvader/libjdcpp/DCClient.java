@@ -18,7 +18,6 @@ import java.util.List;
  * @see DCPreferences
  */
 public class DCClient {
-	private String HubName;
 	InetAddress HubAddress;
 	int HubPort;
 
@@ -31,16 +30,21 @@ public class DCClient {
 	public DCRevconnect revConnectHandler;
 	private DCHandlers.BoardMessageHandler mainBoardMessageHandler;
 
-	public long getDownloadBytes() {
-		return downloadHandler.getDownloadStatus();
-	}
 
-	public long getDownloadFileFullSize() {
-		return downloadHandler.getDownloadFileFullSize();
-	}
+	// BASIC ALIASES to other classes.
 
 	public static class NotifyUsersChange extends UsersHandler {
 		/* Just a stub */
+	}
+
+	public static class DCBasicDownloadHandler
+			extends
+				DCDownloader.DownloadQueueEntity {
+
+		public DCBasicDownloadHandler(DCUser target_user, DCUser my_user,
+				String remote_filename, String local_filename) {
+			super(target_user, my_user, remote_filename, local_filename);
+		}
 	}
 
 	public static class PassiveDownloadConnection extends DCRevconnect {
@@ -50,7 +54,6 @@ public class DCClient {
 				String remote_filaname, DCClient client) {
 			super(target_user, my_user, prefs, local_filename, remote_filaname,
 					client);
-			// TODO Auto-generated constructor stub
 		}
 		/* Just a stub */
 	}
@@ -168,33 +171,30 @@ public class DCClient {
 		mainMessageRouter.customSubscribe("Quit", handler);
 	}
 
-	public void startPassiveDownload(PassiveDownloadConnection o,
+	public DCDownloader.DownloadQueueEntity startPassiveDownload(
+			PassiveDownloadConnection o,
 			int timeout) throws InterruptedException {
-		// mainMessageRouter.subscribe("ConnectToMe", o);
 		DCDownloader.DownloadQueueEntity downloadE = new DCDownloader.DownloadQueueEntity(
 				o.getTarget_user(), o.getMy_user(), o.getRemote_filaname(),
 				o.getLocal_filename());
 		downloadHandler.addDownloadEntity(o.getTarget_user().nick, downloadE);
 		handler.send_revconnect(o.getMy_user(), o.getTarget_user());
-
-		// DCHandlers.UnsubscriptionHandler unsubscriptionHandler = new
-		// UnsubscriptionHandler(
-		// this, o, timeout);
-		// Thread unsubscriptionThread = new Thread(unsubscriptionHandler);
-		// unsubscriptionThread.start();
-
-		// Thread.sleep(timeout);
-		// unsetPassiveDownloadHandler(o);
+		return downloadE;
 	}
 
 	public boolean stopDownloadHandler(
-			PassiveDownloadConnection connectionHandler) {
-		return connectionHandler.stopDownloadHandler();
+			DCDownloader.DownloadQueueEntity downloadEntity) {
+		// TODO GRACEFUL SHUTDOWN
+		// CLose : Sockets, kill thread, remove sick elements from the
+		// DownloadQueue.
+
+		return true;
 	}
 
-	public void startPassiveDownload(PassiveDownloadConnection o)
+	public DCDownloader.DownloadQueueEntity startPassiveDownload(
+			PassiveDownloadConnection o)
 			throws InterruptedException {
-		startPassiveDownload(o, 1000);
+		return startPassiveDownload(o, 1000);
 	}
 
 	public void unsetPassiveDownloadHandler(DCCommand o) {
@@ -227,8 +227,7 @@ public class DCClient {
 		downloadHandler = new DCDownloader();
 
 		DCDownloader.downloadManager dm = downloadHandler.new downloadManager(
-				entity.my_user, entity.target_user, entity.remote_filename,
-				entity.local_filename, rlock, handler);
+				entity, rlock, handler);
 		Thread dm_thread = new Thread(dm);
 		dm_thread.start();
 

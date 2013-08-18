@@ -11,6 +11,9 @@ public class DCConstants {
 	public static String version_short = "1.0";
 	public static String default_lock = "LIBJDCPPDOESNOTKNOWWHATLOCKTOGIVEU";
 	public static String default_pk = "libjdcppv1.0----";
+	public static enum DownloadStatus {
+		UNDEFINED, INITIATED, STARTED, INTERUPTED, SHUTDOWN, FAILED, DOWNLOADING, COMPLETED
+	};
 
 	/**
 	 * This is the maximum number of bytes per chunk sent while transferring

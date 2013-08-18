@@ -86,6 +86,9 @@ public class DCHandlers {
 			}
 			DCDownloader.DownloadQueueEntity downloadEntity = downloaderManager
 					.getDownloadEntity(hisnick.hisinfo.nick);
+			if (downloadEntity == null)
+				return;
+
 			downloader.startDownloadingFile(downloadEntity, client, rlock,
 					handlerLocal);
 

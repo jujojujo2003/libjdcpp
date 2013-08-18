@@ -29,6 +29,11 @@ public class MessageHandler {
 											// start dumping the stream to file
 	private long dump_bytes = 0;
 
+	DCDownloader.DownloadQueueEntity downloadEntity = null;
+	public void setDownloadEntity(DCDownloader.DownloadQueueEntity entity) {
+		this.downloadEntity = entity;
+	}
+
 	/**
 	 * Start dumping the rest of the input stream to a file Stop after dumping
 	 * no_bytes of data.
@@ -100,6 +105,9 @@ public class MessageHandler {
 								break;
 							output_file.write(write_buffer, 0, s);
 							dump_bytes += s;
+							if (downloadEntity != null) {
+								downloadEntity.downloadedSize = dump_bytes;
+							}
 
 							if (dump_bytes >= dump_bytes_limit)
 								break;
