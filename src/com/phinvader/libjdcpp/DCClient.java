@@ -26,7 +26,9 @@ public class DCClient {
 	private MessageHandler handler;
 	private UsersHandler mainUserHandler;
 	private MessageRouter mainMessageRouter;
-	private DCDownloader downloadHandler;
+	public DCDownloader downloadHandler;
+	public DCHandlers.MainDownloadHandler mainDownloader;
+	public DCRevconnect revConnectHandler;
 	private DCHandlers.BoardMessageHandler mainBoardMessageHandler;
 
 	public long getDownloadBytes() {
@@ -119,42 +121,70 @@ public class DCClient {
 		handler.send_myinfo(myuser);
 	}
 
-	public void bootstrap() {
+	/**
+	 * To start all transactions.
+	 */
+	public void bootstrap(DCUser myuser) {
 		mainMessageRouter = new MessageRouter(handler);
 		mainUserHandler = new UsersHandler();
 		mainBoardMessageHandler = new DCHandlers.BoardMessageHandler();
+		downloadHandler = new DCDownloader();
+		mainDownloader = new DCHandlers.MainDownloadHandler(myuser,
+				downloadHandler, this);
+		downloadHandler.initDownloadQ();
 	}
 
+
+	/**
+	 * Start listening to Messages
+	 */
 	public void InitiateDefaultRouting() {
 
 		mainMessageRouter.subscribe("MyINFO", mainUserHandler);
 		mainMessageRouter.subscribe("Quit", mainUserHandler);
 		mainMessageRouter.subscribe("BoardMessage", mainBoardMessageHandler);
+		mainMessageRouter.subscribe("ConnectToMe", mainDownloader);
 		Thread routing_thread = new Thread(mainMessageRouter);
 		routing_thread.start();
 	}
 
+	/**
+	 * set handlers to change userlist
+	 * 
+	 * @param handler
+	 */
 	public void setUserChangeHandler(DCCommand handler) {
 		mainMessageRouter.subscribe("MyINFO", handler);
 		mainMessageRouter.subscribe("Quit", handler);
 	}
+
+	/**
+	 * Custom callback for changes in userlist
+	 * 
+	 * @param handler
+	 */
 	public void setCustomUserChangeHandler(DCCommand handler) {
 		mainMessageRouter.customSubscribe("MyINFO", handler);
 		mainMessageRouter.customSubscribe("Quit", handler);
 	}
 
-	public void startPassiveDownload(DCUser t, DCUser m, DCCommand o,
+	public void startPassiveDownload(PassiveDownloadConnection o,
 			int timeout) throws InterruptedException {
-		mainMessageRouter.subscribe("ConnectToMe", o);
-		handler.send_revconnect(m, t);
-		//
-		// DCHandlers.UnsubscriptionHandler unsubscriptionHandler =
-		// new UnsubscriptionHandler(this, o, timeout);
+		// mainMessageRouter.subscribe("ConnectToMe", o);
+		DCDownloader.DownloadQueueEntity downloadE = new DCDownloader.DownloadQueueEntity(
+				o.getTarget_user(), o.getMy_user(), o.getRemote_filaname(),
+				o.getLocal_filename());
+		downloadHandler.addDownloadEntity(o.getTarget_user().nick, downloadE);
+		handler.send_revconnect(o.getMy_user(), o.getTarget_user());
+
+		// DCHandlers.UnsubscriptionHandler unsubscriptionHandler = new
+		// UnsubscriptionHandler(
+		// this, o, timeout);
 		// Thread unsubscriptionThread = new Thread(unsubscriptionHandler);
 		// unsubscriptionThread.start();
 
-		Thread.sleep(timeout);
-		unsetPassiveDownloadHandler(o);
+		// Thread.sleep(timeout);
+		// unsetPassiveDownloadHandler(o);
 	}
 
 	public boolean stopDownloadHandler(
@@ -162,9 +192,9 @@ public class DCClient {
 		return connectionHandler.stopDownloadHandler();
 	}
 
-	public void startPassiveDownload(DCUser t, DCUser m, DCCommand o)
+	public void startPassiveDownload(PassiveDownloadConnection o)
 			throws InterruptedException {
-		startPassiveDownload(t, m, o, 1000);
+		startPassiveDownload(o, 1000);
 	}
 
 	public void unsetPassiveDownloadHandler(DCCommand o) {
@@ -191,15 +221,14 @@ public class DCClient {
 		handler.send_search(key, myuser);
 	}
 
-	public void startDownloadingFile(DCRevconnect dcRevconnect, DCUser myuser,
-			DCUser target_user, String local_filename, String remote_filename,
-			DCClient client) {
+	public void startDownloadingFile(DCDownloader.DownloadQueueEntity entity,
+			DCClient client, DCMessage rlock, MessageHandler handler) {
 
 		downloadHandler = new DCDownloader();
 
 		DCDownloader.downloadManager dm = downloadHandler.new downloadManager(
-				dcRevconnect, myuser, target_user, remote_filename,
-				local_filename);
+				entity.my_user, entity.target_user, entity.remote_filename,
+				entity.local_filename, rlock, handler);
 		Thread dm_thread = new Thread(dm);
 		dm_thread.start();
 

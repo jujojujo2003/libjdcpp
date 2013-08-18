@@ -2,9 +2,8 @@ package com.phinvader.libjdcpp;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
-public class DCRevconnect implements DCCommand {
+public class DCRevconnect {
 
 	public Socket s;
 
@@ -56,40 +55,33 @@ public class DCRevconnect implements DCCommand {
 		this.local_filename = local_filename;
 		this.remote_filaname = remote_filaname;
 		this.client = client;
+		DCLogger.Log(target_user.toString());
 	}
 
-	@Override
-	public void onCommand(DCMessage msg) {
-		DCLogger.Log("in DCRevconnect" + msg.toString());
-		currentDownloadStatus = DownloadStatus.INITIATED;
-		String target_identifier = msg.toString().split(" ")[3];
-		String[] ip_port_raw = target_identifier.split(":");
-		String remote_ip = ip_port_raw[0];
-		String remote_port = ip_port_raw[1];
 
-		downloader = new DCClient();
-
-		try {
-			s = new Socket(remote_ip, Integer.parseInt(remote_port));
-			currentDownloadStatus = DownloadStatus.STARTED;
-		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UnknownHostException e) {
-			currentDownloadStatus = DownloadStatus.FAILED;
-			DCLogger.Log("ERROR - Socket creation error 1");
-			e.printStackTrace();
-			return;
-		} catch (IOException e) {
-			DCLogger.Log("ERROR - Socket creation error 2");
-			currentDownloadStatus = DownloadStatus.FAILED;
-			e.printStackTrace();
-			return;
-		}
-		currentDownloadStatus = DownloadStatus.DOWNLOADING;
-		downloader.startDownloadingFile(this, my_user, target_user,
-				local_filename, remote_filaname, client);
-
+	public DCUser getTarget_user() {
+		return target_user;
+	}
+	public void setTarget_user(DCUser target_user) {
+		this.target_user = target_user;
+	}
+	public DCUser getMy_user() {
+		return my_user;
+	}
+	public void setMy_user(DCUser my_user) {
+		this.my_user = my_user;
+	}
+	public String getLocal_filename() {
+		return local_filename;
+	}
+	public void setLocal_filename(String local_filename) {
+		this.local_filename = local_filename;
+	}
+	public String getRemote_filaname() {
+		return remote_filaname;
+	}
+	public void setRemote_filaname(String remote_filaname) {
+		this.remote_filaname = remote_filaname;
 	}
 
 }

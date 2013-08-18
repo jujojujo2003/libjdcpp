@@ -23,6 +23,7 @@ public class DCConstants {
 	 * will block and wait till the message Queue is freed
 	 */
 	public static int max_message_queue_size = 1024;
+	public static int max_download_queue_size = 1024;
 
 	public static int io_buffer_size = 65536;
 }

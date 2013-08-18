@@ -24,7 +24,7 @@ public class BasicClientv2 {
 
 		@Override
 		public void onCommand(DCMessage msg) {
-			// DCLogger.Log("SEARCH "+msg.file_path);
+			DCLogger.Log("SEARCH " + msg.file_path);
 		}
 
 	}
@@ -51,7 +51,7 @@ public class BasicClientv2 {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		client.bootstrap();
+		client.bootstrap(myuser);
 		BasicClientv2 context = new BasicClientv2();
 
 		MyUserHandler uh = context.new MyUserHandler();
@@ -70,50 +70,36 @@ public class BasicClientv2 {
 				target_user, myuser, prefs, local_filename, remote_filename,
 				client);
 		try {
-			client.startPassiveDownload(target_user, myuser, myrc, 1000);
+			client.startPassiveDownload(myrc, 1000);
 		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
-		DCLogger.Log("Time out completed");
 		DCUser target_user2 = new DCUser();
-		target_user2.nick = "new1";
-
-		String local_filename2 = "Boo3.xml";
+		target_user2.nick = "arthur";
 
 		DCClient.PassiveDownloadConnection myrc2 = new DCClient.PassiveDownloadConnection(
-				target_user2, myuser, prefs, local_filename2, remote_filename,
+				target_user2, myuser, prefs, "Boo3.xml", remote_filename,
 				client);
-		try {
-			client.startPassiveDownload(target_user2, myuser, myrc2);
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		MySearchHandler srch = context.new MySearchHandler();
-		client.setCustomSearchHandler(srch);
 
 		try {
-			Thread.sleep(2500);
+			client.startPassiveDownload(myrc2);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch xblock
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
+		DCLogger.Log("Time out completed");
+
+		MySearchHandler srch = context.new MySearchHandler();
+		client.setCustomSearchHandler(srch);
 		// getBoardMessages() gets last 100 messages
 		// getBoardMessages(500) gets last 500 messages
 		// Return is a List<DCMessage>
 		// each entry in the list, msg, has msg.command=BoardMessage, and
 		// message string stored in msg.msg_s
-		DCLogger.Log(client.getBoardMessages().get(0).msg_s);
-
-		DCLogger.Log("DOWNLOAD SOFAR : "
-				+ Long.toString(myrc2.getDownloadBytes()));
-		DCLogger.Log("DOWNLOAD TOTAL EXPECTED: "
-				+ Long.toString(myrc2.getDownloadFileFullSize()));
-		// client.searchForFile("F?T?0?1?dexter", myuser);
+		client.searchForFile("F?T?0?1?dexter", myuser);
 
 	}
 

@@ -83,7 +83,6 @@ public class MessageRouter implements Runnable {
 			} catch (InterruptedException e) {
 				continue;
 			}
-			DCLogger.Log(msg.toString());
 
 			List<DCCommand> listOfSubscriptions = subscriptions
 					.get(msg.command);
@@ -91,7 +90,7 @@ public class MessageRouter implements Runnable {
 
 			} else {
 				for (DCCommand dcCommand : listOfSubscriptions) {
-					DCLogger.Log("------->" + dcCommand.toString());
+					// DCLogger.Log("------->" + dcCommand.toString());
 					DCCommand handle = dcCommand;
 					if (handle != null) {
 						handle.onCommand(msg);
