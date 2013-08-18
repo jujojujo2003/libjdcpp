@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class DCRevconnect implements DCCommand{
+public class DCRevconnect implements DCCommand {
 
-	public Socket s; 
+	public Socket s;
 
 	private DCUser target_user;
 	private DCUser my_user;
@@ -14,56 +14,61 @@ public class DCRevconnect implements DCCommand{
 	private String local_filename;
 	private String remote_filaname;
 	private DCClient downloader;
-	public static enum DownloadStatus{
-		UNDEFINED, INITIATED, STARTED,DOWNLOADING,COMPLETED, INTERUPTED, FAILED;
+	private DCClient client;
+	public static enum DownloadStatus {
+		UNDEFINED, INITIATED, STARTED, DOWNLOADING, COMPLETED, INTERUPTED, FAILED, SHUTDOWN;
 	}
-	
-	
-	public long getDownloadBytes(){
+
+	public long getDownloadBytes() {
 		return downloader.getDownloadBytes();
 	}
-	public long getDownloadFileFullSize(){
+	public long getDownloadFileFullSize() {
 		return downloader.getDownloadFileFullSize();
 	}
-	
-	private DownloadStatus currentDownloadStatus = DownloadStatus.UNDEFINED; 
-	
-	
-	
+
+	private DownloadStatus currentDownloadStatus = DownloadStatus.UNDEFINED;
+
 	public DownloadStatus getCurrentDownloadStatus() {
 		return currentDownloadStatus;
 	}
-
-
 
 	public void setCurrentDownloadStatus(DownloadStatus currentDownloadStatus) {
 		this.currentDownloadStatus = currentDownloadStatus;
 	}
 
-
+	public boolean stopDownloadHandler() {
+		try {
+			s.close();
+			this.currentDownloadStatus = DownloadStatus.SHUTDOWN;
+		} catch (IOException e) {
+			return false;
+		}
+		return true;
+	}
 
 	public DCRevconnect(DCUser target_user, DCUser my_user,
-			DCPreferences prefs, String local_filename, String remote_filaname) {
+			DCPreferences prefs, String local_filename, String remote_filaname,
+			DCClient client) {
 		super();
 		this.target_user = target_user;
 		this.my_user = my_user;
 		this.prefs = prefs;
 		this.local_filename = local_filename;
 		this.remote_filaname = remote_filaname;
+		this.client = client;
 	}
-	
-	
 
 	@Override
 	public void onCommand(DCMessage msg) {
-		DCLogger.Log("in DCRevconnect"+msg.toString());
-		currentDownloadStatus =  DownloadStatus.INITIATED;
+		DCLogger.Log("in DCRevconnect" + msg.toString());
+		currentDownloadStatus = DownloadStatus.INITIATED;
 		String target_identifier = msg.toString().split(" ")[3];
 		String[] ip_port_raw = target_identifier.split(":");
 		String remote_ip = ip_port_raw[0];
 		String remote_port = ip_port_raw[1];
-		
-		
+
+		downloader = new DCClient();
+
 		try {
 			s = new Socket(remote_ip, Integer.parseInt(remote_port));
 			currentDownloadStatus = DownloadStatus.STARTED;
@@ -82,11 +87,9 @@ public class DCRevconnect implements DCCommand{
 			return;
 		}
 		currentDownloadStatus = DownloadStatus.DOWNLOADING;
-		downloader = new DCClient();
-		downloader.startDownloadingFile(this, my_user, local_filename, remote_filaname);
-		
+		downloader.startDownloadingFile(this, my_user, target_user,
+				local_filename, remote_filaname, client);
 
-		
 	}
 
 }

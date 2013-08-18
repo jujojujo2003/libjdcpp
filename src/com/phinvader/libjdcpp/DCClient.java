@@ -21,54 +21,47 @@ public class DCClient {
 	private String HubName;
 	InetAddress HubAddress;
 	int HubPort;
-	
-	
-	private Socket DCConnectionSocket ;
+
+	private Socket DCConnectionSocket;
 	private MessageHandler handler;
 	private UsersHandler mainUserHandler;
 	private MessageRouter mainMessageRouter;
-	private DCDownloader downloadHandler ;
+	private DCDownloader downloadHandler;
 	private DCHandlers.BoardMessageHandler mainBoardMessageHandler;
-	
-	public long getDownloadBytes(){
+
+	public long getDownloadBytes() {
 		return downloadHandler.getDownloadStatus();
 	}
-	
 
-	
-	public long getDownloadFileFullSize(){
+	public long getDownloadFileFullSize() {
 		return downloadHandler.getDownloadFileFullSize();
 	}
 
-	
-	
-	
-	public static class NotifyUsersChange extends UsersHandler{
+	public static class NotifyUsersChange extends UsersHandler {
 		/* Just a stub */
 	}
-	
-	public static class PassiveDownloadConnection extends DCRevconnect{
+
+	public static class PassiveDownloadConnection extends DCRevconnect {
 
 		public PassiveDownloadConnection(DCUser target_user, DCUser my_user,
 				DCPreferences prefs, String local_filename,
-				String remote_filaname) {
-			super(target_user, my_user, prefs, local_filename, remote_filaname);
+				String remote_filaname, DCClient client) {
+			super(target_user, my_user, prefs, local_filename, remote_filaname,
+					client);
 			// TODO Auto-generated constructor stub
 		}
 		/* Just a stub */
 	}
-	
-	public static class BasicCallbackHandler implements DCCommand{
+
+	public static class BasicCallbackHandler implements DCCommand {
 
 		@Override
 		public void onCommand(DCMessage msg) {
 			/* This is just a stub */
 		}
-		
+
 	}
-	
-	
-	
+
 	/**
 	 * 
 	 * This function is used to connect to a DC-enabled hub on the specified ip
@@ -83,14 +76,15 @@ public class DCClient {
 	 * @param pref
 	 *            - Preference object containing user prefences , such as
 	 *            nickname
-	 * @throws IOException 
-	 * @throws UnknownHostException 
-	 * @throws InterruptedException 
+	 * @throws IOException
+	 * @throws UnknownHostException
+	 * @throws InterruptedException
 	 * 
 	 * @see DCClient#connect(String, DCPreferences)
 	 * 
 	 */
-	public void connect(String ip, int port, DCPreferences pref) throws UnknownHostException, IOException, InterruptedException {
+	public void connect(String ip, int port, DCPreferences pref)
+			throws UnknownHostException, IOException, InterruptedException {
 
 		DCConnectionSocket = new Socket(ip, port);
 		handler = new MessageHandler(DCConnectionSocket);
@@ -103,9 +97,8 @@ public class DCClient {
 		supported_methods.add("NoGetINFO");
 
 		handler.send_supports(supported_methods);
-		handler.send_key(DCFunctions.convert_lock_to_key(lock.lock_s
-				.getBytes()));
-		
+		handler.send_key(DCFunctions.convert_lock_to_key(lock.lock_s.getBytes()));
+
 		handler.send_validatenick(pref.getNick());
 
 		while (true) {
@@ -116,78 +109,101 @@ public class DCClient {
 						&& msg.hello_s.equals(pref.getNick()))
 					break;
 		}
-		
+
 		handler.send_version();
 		handler.send_getnicklist();
-		
+
 		DCUser myuser = new DCUser();
 		myuser.nick = pref.getNick();
-		
+
 		handler.send_myinfo(myuser);
 	}
-	
-	public void bootstrap(){
+
+	public void bootstrap() {
 		mainMessageRouter = new MessageRouter(handler);
 		mainUserHandler = new UsersHandler();
 		mainBoardMessageHandler = new DCHandlers.BoardMessageHandler();
 	}
-	
-	public void InitiateDefaultRouting(){
-		
+
+	public void InitiateDefaultRouting() {
+
 		mainMessageRouter.subscribe("MyINFO", mainUserHandler);
 		mainMessageRouter.subscribe("Quit", mainUserHandler);
 		mainMessageRouter.subscribe("BoardMessage", mainBoardMessageHandler);
 		Thread routing_thread = new Thread(mainMessageRouter);
 		routing_thread.start();
 	}
-	
-	public void setUserChangeHandler(DCCommand handler){
-		mainMessageRouter.subscribe("MyINFO",handler);
+
+	public void setUserChangeHandler(DCCommand handler) {
+		mainMessageRouter.subscribe("MyINFO", handler);
 		mainMessageRouter.subscribe("Quit", handler);
 	}
-	public void setCustomUserChangeHandler(DCCommand handler){
+	public void setCustomUserChangeHandler(DCCommand handler) {
 		mainMessageRouter.customSubscribe("MyINFO", handler);
 		mainMessageRouter.customSubscribe("Quit", handler);
 	}
-	
-	
-	public void setPassiveDownloadHandler(DCUser t, DCUser m, DCCommand o){
+
+	public void startPassiveDownload(DCUser t, DCUser m, DCCommand o,
+			int timeout) throws InterruptedException {
 		mainMessageRouter.subscribe("ConnectToMe", o);
-		handler.send_revconnect(m,t);
+		handler.send_revconnect(m, t);
+		//
+		// DCHandlers.UnsubscriptionHandler unsubscriptionHandler =
+		// new UnsubscriptionHandler(this, o, timeout);
+		// Thread unsubscriptionThread = new Thread(unsubscriptionHandler);
+		// unsubscriptionThread.start();
+
+		Thread.sleep(timeout);
+		unsetPassiveDownloadHandler(o);
 	}
-	
-	public void setSearchHandler(DCCommand handler){
+
+	public boolean stopDownloadHandler(
+			PassiveDownloadConnection connectionHandler) {
+		return connectionHandler.stopDownloadHandler();
+	}
+
+	public void startPassiveDownload(DCUser t, DCUser m, DCCommand o)
+			throws InterruptedException {
+		startPassiveDownload(t, m, o, 1000);
+	}
+
+	public void unsetPassiveDownloadHandler(DCCommand o) {
+		DCLogger.Log("UNSETTING" + o.toString());
+		mainMessageRouter.unsubscribe("ConnectToMe", o);
+	}
+
+	public void setSearchHandler(DCCommand handler) {
 		mainMessageRouter.subscribe("SR", handler);
 	}
-	public void setCustomSearchHandler(DCCommand handler){
+	public void setCustomSearchHandler(DCCommand handler) {
 		mainMessageRouter.customSubscribe("SR", handler);
 	}
-	
-	public void setCustomBoardMessageHandler(DCCommand handler){
+
+	public void setCustomBoardMessageHandler(DCCommand handler) {
 		mainMessageRouter.subscribe("BoardMessage", handler);
 	}
-	
-	public void setCustomRawHandler(String command, DCCommand handler){
+
+	public void setCustomRawHandler(String command, DCCommand handler) {
 		mainMessageRouter.subscribe(command, handler);
 	}
-	
-	public void searchForFile(String key, DCUser myuser){
+
+	public void searchForFile(String key, DCUser myuser) {
 		handler.send_search(key, myuser);
 	}
-	
-	
-	public void startDownloadingFile(DCRevconnect dcRevconnect, DCUser myuser, String local_filename, String remote_filename){
-		
+
+	public void startDownloadingFile(DCRevconnect dcRevconnect, DCUser myuser,
+			DCUser target_user, String local_filename, String remote_filename,
+			DCClient client) {
+
 		downloadHandler = new DCDownloader();
-		
-		DCDownloader.downloadManager dm = downloadHandler.new downloadManager(dcRevconnect, myuser, remote_filename, local_filename);
+
+		DCDownloader.downloadManager dm = downloadHandler.new downloadManager(
+				dcRevconnect, myuser, target_user, remote_filename,
+				local_filename);
 		Thread dm_thread = new Thread(dm);
 		dm_thread.start();
 
 	}
-	
-	
-	
 
 	/**
 	 * Connects using the default port 411.
@@ -198,34 +214,35 @@ public class DCClient {
 	 * @param pref
 	 *            - Preference object containing user prefences , such as
 	 *            nickname
-	 * @throws IOException 
-	 * @throws UnknownHostException 
-	 * @throws InterruptedException 
+	 * @throws IOException
+	 * @throws UnknownHostException
+	 * @throws InterruptedException
 	 * 
 	 * @see DCClient#connect(String, int, DCPreferences)
 	 */
-	public void connect(String ip, DCPreferences pref) throws UnknownHostException, IOException, InterruptedException {
+	public void connect(String ip, DCPreferences pref)
+			throws UnknownHostException, IOException, InterruptedException {
 		connect(ip, 411, pref);
 	}
-	
+
 	/**
 	 * @return The list of users registered with this hub.
 	 */
-	public ArrayList<DCUser> get_nick_list() { 
+	public ArrayList<DCUser> get_nick_list() {
 		ArrayList<DCUser> nick_array = new ArrayList<DCUser>();
 		Iterator<DCUser> it = mainUserHandler.nick_q.iterator();
-		while(it.hasNext()){
+		while (it.hasNext()) {
 			nick_array.add(it.next());
 		}
 		return nick_array;
 	}
-	public List<DCMessage> getBoardMessages(){
+	public List<DCMessage> getBoardMessages() {
 		return mainBoardMessageHandler.getLatestMessages();
 	}
-	public List<DCMessage> getBoardMessages(int limit){
+	public List<DCMessage> getBoardMessages(int limit) {
 		return mainBoardMessageHandler.getLatestMessages(limit);
 	}
-	public String getBoardMessageLog(){
+	public String getBoardMessageLog() {
 		return mainBoardMessageHandler.toString();
 	}
 }

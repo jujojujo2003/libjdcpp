@@ -1,11 +1,8 @@
 package com.phinvader.libjdcpp;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 /**
  * This is the thread that will perpetually listen for MESSAGES (msg) from the
@@ -38,22 +35,38 @@ public class MessageRouter implements Runnable {
 	public boolean subscribe(String command, DCCommand handler) {
 		List<DCCommand> freshList = new ArrayList<DCCommand>();
 		if (subscriptions.get(command) == null)
-			subscriptions.put(command,freshList);
+			subscriptions.put(command, freshList);
 		List<DCCommand> handlersList = subscriptions.get(command);
 		handlersList.add(handler);
 		DCLogger.Log(handlersList.get(0).toString());
 		subscriptions.put(command, handlersList);
 		return true;
 	}
-	
+
 	public boolean customSubscribe(String command, DCCommand handler) {
 		List<DCCommand> freshList = new ArrayList<DCCommand>();
 		if (customSubscriptions.get(command) == null)
-			customSubscriptions.put(command,freshList);
+			customSubscriptions.put(command, freshList);
 		List<DCCommand> handlersList = customSubscriptions.get(command);
 		handlersList.add(handler);
 		DCLogger.Log(handlersList.get(0).toString());
 		customSubscriptions.put(command, handlersList);
+		return true;
+	}
+
+	public boolean unsubscribe(String command, DCCommand handler) {
+		List<DCCommand> freshList = subscriptions.get(command);
+		DCCommand objectToRemove = null;
+		for (DCCommand dcCommand : freshList) {
+			if (dcCommand.equals(handler)) {
+				objectToRemove = dcCommand;
+			}
+
+		}
+		if (objectToRemove != null) {
+			freshList.remove(objectToRemove);
+		}
+		subscriptions.put(command, freshList);
 		return true;
 	}
 
@@ -70,13 +83,15 @@ public class MessageRouter implements Runnable {
 			} catch (InterruptedException e) {
 				continue;
 			}
+			DCLogger.Log(msg.toString());
 
 			List<DCCommand> listOfSubscriptions = subscriptions
 					.get(msg.command);
 			if (listOfSubscriptions == null) {
-				
+
 			} else {
 				for (DCCommand dcCommand : listOfSubscriptions) {
+					DCLogger.Log("------->" + dcCommand.toString());
 					DCCommand handle = dcCommand;
 					if (handle != null) {
 						handle.onCommand(msg);
@@ -84,13 +99,13 @@ public class MessageRouter implements Runnable {
 
 				}
 			}
-			
+
 			List<DCCommand> listOfCustomSubscriptions = customSubscriptions
 					.get(msg.command);
 			if (listOfCustomSubscriptions == null) {
 				continue;
 			} else {
-				for (DCCommand dcCallback: listOfCustomSubscriptions) {
+				for (DCCommand dcCallback : listOfCustomSubscriptions) {
 					DCCommand handle = dcCallback;
 					if (handle != null) {
 						handle.onCommand(msg);
@@ -98,8 +113,6 @@ public class MessageRouter implements Runnable {
 
 				}
 			}
-			
-			
 
 		}
 

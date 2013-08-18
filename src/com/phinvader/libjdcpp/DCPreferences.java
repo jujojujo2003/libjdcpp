@@ -3,7 +3,7 @@ package com.phinvader.libjdcpp;
 public class DCPreferences {
 
 	public String nick; // DC Nick
-	public long share_size;  //
+	public long share_size; //
 	public String server_ip; // IP address of the server
 	public static String self_ip;
 
@@ -34,12 +34,11 @@ public class DCPreferences {
 	public void load_preferences(String pref_string) {
 		// TODO auto-generated block
 	}
-	
-	
-	public static String get_self_ip(){
+
+	public static String get_self_ip() {
 		return self_ip;
 	}
-	
+
 	// Following are the Getters and Setters for the params in this class
 	public String getNick() {
 		return nick;
@@ -64,7 +63,5 @@ public class DCPreferences {
 	public void setServer_ip(String server_ip) {
 		this.server_ip = server_ip;
 	}
-	
-	
 
 }

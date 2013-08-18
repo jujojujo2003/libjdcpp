@@ -28,7 +28,7 @@ public class MessageHandler {
 	private String dump_stream_file = null; // Once this is set to not null
 											// start dumping the stream to file
 	private long dump_bytes = 0;
-	
+
 	/**
 	 * Start dumping the rest of the input stream to a file Stop after dumping
 	 * no_bytes of data.
@@ -49,8 +49,8 @@ public class MessageHandler {
 	public long get_dumped_bytes() {
 		return dump_bytes;
 	}
-	
-	public long get_filesize(){
+
+	public long get_filesize() {
 		return dump_bytes_limit;
 	}
 
@@ -100,7 +100,7 @@ public class MessageHandler {
 								break;
 							output_file.write(write_buffer, 0, s);
 							dump_bytes += s;
-							
+
 							if (dump_bytes >= dump_bytes_limit)
 								break;
 						}
@@ -112,7 +112,7 @@ public class MessageHandler {
 					try {
 						addMessage(DCMessage.parse_message(("$HubQuit " + e
 								.toString()).getBytes()));
-						//s.close();
+						// s.close();
 						// TODO remove this stacktrace. Added only for debugging
 						// purposes
 						e.printStackTrace();
@@ -156,8 +156,12 @@ public class MessageHandler {
 	public DCMessage getNextMessage() throws InterruptedException {
 		return message_queue.take();
 	}
-	
-	public boolean isEmpty(){
+
+	public DCMessage checkNextMessage() {
+		return message_queue.peek();
+	}
+
+	public boolean isEmpty() {
 		return message_queue.isEmpty();
 	}
 
@@ -280,9 +284,9 @@ public class MessageHandler {
 		send_msg("$ConnectToMe " + mynick.nick + " " + host + ":"
 				+ Integer.toString(port));
 	}
-	
-	public void send_search(String searchString, DCUser myuser){
-		send_msg("$Search Hub:"+myuser.nick+" "+searchString);
+
+	public void send_search(String searchString, DCUser myuser) {
+		send_msg("$Search Hub:" + myuser.nick + " " + searchString);
 	}
 
 	public void send_myinfo(DCUser user) {

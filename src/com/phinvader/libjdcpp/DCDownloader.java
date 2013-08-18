@@ -7,12 +7,16 @@ import com.phinvader.libjdcpp.DCRevconnect.DownloadStatus;
 
 public class DCDownloader {
 
-	private MessageHandler handler ;
-	
-	public long getDownloadStatus(){
+	private MessageHandler handler;
+
+	public int CHECKOUT_TIME_INTERVAL = 10; // Polling Next message, for race
+											// condition
+
+	public long getDownloadStatus() {
 		return handler.get_dumped_bytes();
 	}
-	public long getDownloadFileFullSize(){
+
+	public long getDownloadFileFullSize() {
 		return handler.get_filesize();
 	}
 
@@ -29,11 +33,10 @@ public class DCDownloader {
 	 * @return
 	 */
 
-	private boolean download_file(DCUser myuser, Socket s, String fname,
-			String save_file_name) {
+	private boolean download_file(DCUser myuser, DCUser target_user, Socket s,
+			String fname, String save_file_name) {
 		// Using REVCONNECT
 		try {
-			DCLogger.Log("Download Started" + s.toString());
 
 			handler = new MessageHandler(s);
 			handler.send_mynick(myuser);
@@ -46,6 +49,25 @@ public class DCDownloader {
 			DCMessage rlock = null;
 			DCMessage key = null;
 			DCMessage direction = null;
+
+			DCMessage litmusMessage = null;
+			// Keep polling till there is a message in the queue
+			while (litmusMessage == null) {
+				litmusMessage = handler.checkNextMessage();
+				Thread.sleep(CHECKOUT_TIME_INTERVAL);
+			}
+
+			// First message should be MyNick == target_user
+
+			if (litmusMessage.command.equals("MyNick")) {
+				if (!litmusMessage.hisinfo.nick.equals(target_user.nick)) {
+					DCLogger.Log("Race condition detected, Evaded.");
+					return false;
+				} else {
+					DCLogger.Log("Download Started" + s.toString()
+							+ save_file_name);
+				}
+			}
 			for (int i = 0; i < NUMBER_OF_EXPECTED_REPLIES_FROM_SERVER;) {
 				DCMessage msg = handler.getNextMessage();
 				if (msg.command != null) {
@@ -86,7 +108,7 @@ public class DCDownloader {
 			}
 			s.close();
 			handler.close();
-			DCLogger.Log("DOwnload Complete");
+			DCLogger.Log("DOwnload Complete" + save_file_name);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
@@ -96,13 +118,14 @@ public class DCDownloader {
 		return true;
 	}
 
-	
 	/**
-	 * Download Manager will do the downloading in a separate thread to keep the UI Responsive
+	 * Download Manager will do the downloading in a separate thread to keep the
+	 * UI Responsive
+	 * 
 	 * @author madhavan
-	 *
+	 * 
 	 */
-	
+
 	public class downloadManager implements Runnable {
 
 		private Socket s;
@@ -110,8 +133,11 @@ public class DCDownloader {
 		private DCUser myuser;
 		private String remote_filename;
 		private String local_filename;
+		private DCUser target_user;
+		private DCClient client;
 
-		public downloadManager(DCRevconnect revCon, DCUser myuser, String remote_filename,
+		public downloadManager(DCRevconnect revCon, DCUser myuser,
+				DCUser target_user, String remote_filename,
 				String local_filename) {
 			super();
 			this.revCon = revCon;
@@ -119,14 +145,16 @@ public class DCDownloader {
 			this.myuser = myuser;
 			this.remote_filename = remote_filename;
 			this.local_filename = local_filename;
+			this.target_user = target_user;
+			this.client = client;
 		}
 
 		@Override
 		public void run() {
-			if(download_file(myuser, s, remote_filename, local_filename)){
+			if (download_file(myuser, target_user, s, remote_filename,
+					local_filename)) {
 				revCon.setCurrentDownloadStatus(DownloadStatus.COMPLETED);
-			}
-			else{
+			} else {
 				revCon.setCurrentDownloadStatus(DownloadStatus.INTERUPTED);
 			}
 
@@ -134,6 +162,4 @@ public class DCDownloader {
 
 	}
 
-	
-	
 }

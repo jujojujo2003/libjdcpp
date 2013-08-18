@@ -3,7 +3,6 @@
  */
 package com.phinvader.libjdcpp;
 
-
 /**
  * Contains several useful functions , which are required for DC connection
  * operations, such as converting between locks and keys, hashes etc.

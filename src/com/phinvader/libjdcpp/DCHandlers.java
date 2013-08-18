@@ -4,39 +4,70 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DCHandlers {
-	public static class BoardMessageHandler implements DCCommand{
+
+	public static class UnsubscriptionHandler implements Runnable {
+
+		private DCClient client;
+		private DCCommand handler;
+		private int timeout;
+
+		public UnsubscriptionHandler(DCClient client, DCCommand handler,
+				int timeout) {
+			super();
+			this.client = client;
+			this.handler = handler;
+			this.timeout = timeout;
+		}
+
+		@Override
+		public void run() {
+			try {
+				Thread.sleep(timeout);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			client.unsetPassiveDownloadHandler(handler);
+
+		}
+
+	}
+
+	public static class BoardMessageHandler implements DCCommand {
 
 		List<DCMessage> listOfMessages = new ArrayList<DCMessage>();
-		
+
 		@Override
 		public void onCommand(DCMessage msg) {
-			listOfMessages.add(msg);			
+			listOfMessages.add(msg);
 		}
-		
-		public List<DCMessage> getLatestMessages(){
+
+		public List<DCMessage> getLatestMessages() {
 			return getLatestMessages(100);
 		}
-		
-		public List<DCMessage> getLatestMessages(int limit){
-			int lowerBound = listOfMessages.size()-1-limit;
-			int upperBound = listOfMessages.size()-1;
-			if(limit > listOfMessages.size()){
-				lowerBound = 0 ; 
+
+		public List<DCMessage> getLatestMessages(int limit) {
+			int lowerBound = listOfMessages.size() - 1 - limit;
+			int upperBound = listOfMessages.size() - 1;
+			if (limit > listOfMessages.size()) {
+				lowerBound = 0;
 			}
 			return listOfMessages.subList(lowerBound, upperBound);
-			
-						
+
 		}
-		
-		public String toString(){
+
+		public String toString() {
 			int size = listOfMessages.size();
-			String logString = "Size : "+Integer.toString(listOfMessages.size());
-			if( size > 5){
-				logString += "..."+listOfMessages.get(size-4)+","+listOfMessages.get(size-3)+","+listOfMessages.get(size-2)+","+listOfMessages.get(size-1);
+			String logString = "Size : "
+					+ Integer.toString(listOfMessages.size());
+			if (size > 5) {
+				logString += "..." + listOfMessages.get(size - 4) + ","
+						+ listOfMessages.get(size - 3) + ","
+						+ listOfMessages.get(size - 2) + ","
+						+ listOfMessages.get(size - 1);
 			}
 			return logString;
 		}
-		
+
 	}
 
 }

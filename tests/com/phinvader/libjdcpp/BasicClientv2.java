@@ -8,7 +8,7 @@ public class BasicClientv2 {
 
 		@Override
 		public void onCommand(DCMessage msg) {
-			DCLogger.Log("CALLBACK TIME: " + msg.toString());
+			// DCLogger.Log("CALLBACK TIME: " + msg.toString());
 		}
 	}
 
@@ -24,9 +24,9 @@ public class BasicClientv2 {
 
 		@Override
 		public void onCommand(DCMessage msg) {
-			DCLogger.Log("SEARCH "+msg.file_path);
+			// DCLogger.Log("SEARCH "+msg.file_path);
 		}
-		
+
 	}
 
 	public static void main(String[] args) {
@@ -58,29 +58,50 @@ public class BasicClientv2 {
 		client.setCustomUserChangeHandler(uh);
 		DCCommand messageHandler = context.new MyBoardMessageHandler();
 		client.setCustomBoardMessageHandler(messageHandler);
+		client.InitiateDefaultRouting();
 
+		String remote_filename = "files.xml";
 		DCUser target_user = new DCUser();
 		target_user.nick = "Anecdote";
 
 		String local_filename = "Boo2.xml";
-		String remote_filename = "files.xml";
 
 		DCClient.PassiveDownloadConnection myrc = new DCClient.PassiveDownloadConnection(
-				target_user, myuser, prefs, local_filename, remote_filename);
-		client.setPassiveDownloadHandler(target_user, myuser, myrc);
-		
+				target_user, myuser, prefs, local_filename, remote_filename,
+				client);
+		try {
+			client.startPassiveDownload(target_user, myuser, myrc, 1000);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		DCLogger.Log("Time out completed");
+		DCUser target_user2 = new DCUser();
+		target_user2.nick = "new1";
+
+		String local_filename2 = "Boo3.xml";
+
+		DCClient.PassiveDownloadConnection myrc2 = new DCClient.PassiveDownloadConnection(
+				target_user2, myuser, prefs, local_filename2, remote_filename,
+				client);
+		try {
+			client.startPassiveDownload(target_user2, myuser, myrc2);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
 		MySearchHandler srch = context.new MySearchHandler();
 		client.setCustomSearchHandler(srch);
-		
-		
-		client.InitiateDefaultRouting();
+
 		try {
-			Thread.sleep(500);
+			Thread.sleep(2500);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+			// TODO Auto-generated catch xblock
 			e.printStackTrace();
 		}
-		
+
 		// getBoardMessages() gets last 100 messages
 		// getBoardMessages(500) gets last 500 messages
 		// Return is a List<DCMessage>
@@ -89,13 +110,10 @@ public class BasicClientv2 {
 		DCLogger.Log(client.getBoardMessages().get(0).msg_s);
 
 		DCLogger.Log("DOWNLOAD SOFAR : "
-				+ Long.toString(myrc.getDownloadBytes()));
+				+ Long.toString(myrc2.getDownloadBytes()));
 		DCLogger.Log("DOWNLOAD TOTAL EXPECTED: "
-				+ Long.toString(myrc.getDownloadFileFullSize()));
-		client.searchForFile("F?T?0?1?dexter", myuser);
-		
-		
-		
+				+ Long.toString(myrc2.getDownloadFileFullSize()));
+		// client.searchForFile("F?T?0?1?dexter", myuser);
 
 	}
 

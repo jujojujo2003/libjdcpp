@@ -1,11 +1,11 @@
 package com.phinvader.libjdcpp;
 
-import com.sun.org.apache.xpath.internal.operations.Equals;
 
 /**
- * The only compulsory field here is nick. Rest all may be null.
- * Mostly decided by the $MyInfo command as specified at:
+ * The only compulsory field here is nick. Rest all may be null. Mostly decided
+ * by the $MyInfo command as specified at:
  * http://wiki.gusari.org/index.php?title=$MyINFO
+ * 
  * @author phinfinity
  * 
  */
@@ -14,8 +14,8 @@ public class DCUser {
 	public String ip;
 	public long share_size; // filled by myinfo
 	public String description; // filled by myinfo
-	public String tag;	// filled by myinfo
-	public String email; //filled by myinfo
+	public String tag; // filled by myinfo
+	public String email; // filled by myinfo
 	public String connection_speed; // filled by myinfo
 	public byte speed_id; // filled by myinfo
 	public boolean active; // filled by tag from myfino
@@ -36,11 +36,10 @@ public class DCUser {
 	}
 	public String toString() {
 		String ret = nick;
-		ret += " Tag:"+tag;
-		ret += " share_size:"+share_size;
+		ret += " Tag:" + tag;
+		ret += " share_size:" + share_size;
 		return ret;
 	}
-	
 
 	@Override
 	public boolean equals(Object obj) {
@@ -51,12 +50,12 @@ public class DCUser {
 			return true;
 		if (!(obj instanceof DCUser))
 			return false;
-		return nick.equals(((DCUser)obj).nick);
+		return nick.equals(((DCUser) obj).nick);
 	}
 	@Override
 	public int hashCode() {
 		// Only comparing Nick Names
 		return nick.hashCode();
 	}
-	
+
 }

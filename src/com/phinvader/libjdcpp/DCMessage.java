@@ -1,6 +1,5 @@
 package com.phinvader.libjdcpp;
 
-
 /**
  * This class is a universal container for all DC messages which are transfered
  * over TCP. This includes the data of a file download
@@ -9,12 +8,14 @@ package com.phinvader.libjdcpp;
  * 
  */
 public class DCMessage {
-	public String msg_s; // When there is no command and it is just a text message
+	public String msg_s; // When there is no command and it is just a text
+							// message
 	public String command;
 	public String lock_s; // Lock string in $Lock Command
 	public String key_s; // Key string in $Lock command or the key from $Key
 	public String hubname_s; // HubName given by $HubName command
-	public String[] supports; // List of features supported (by $Supports command
+	public String[] supports; // List of features supported (by $Supports
+								// command
 	public String hello_s;
 	public DCUser myinfo;
 	public DCUser hisinfo;
@@ -22,7 +23,8 @@ public class DCMessage {
 	public String host_name; // ConnectToMe
 	public int port_number; // ConnectToMe
 	public String connect_nick; // ConnectToMe
-	public boolean dir_download; // If direction is download in a $Direction message
+	public boolean dir_download; // If direction is download in a $Direction
+									// message
 	public int dir_no;
 	public long file_length;
 	public String file_path;
@@ -103,8 +105,8 @@ public class DCMessage {
 					String path = "";
 					for (int i = 2; i < values.length - 2; i++) {
 						path += values[i];
-						if(i!=values.length - 3)
-							path+=" ";
+						if (i != values.length - 3)
+							path += " ";
 					}
 					String[] path_size_raw = path.split("");
 					hisinfo = new DCUser();
