@@ -12,6 +12,7 @@ public class DCDownloader {
 		public DCUser my_user;
 		public String remote_filename;
 		public String local_filename;
+		public MessageHandler connectionHandler;
 		public DownloadQueueEntity(DCUser target_user, DCUser my_user,
 				String remote_filename, String local_filename) {
 			super();
@@ -45,7 +46,7 @@ public class DCDownloader {
 
 	public DownloadQueueEntity getDownloadEntity(String nick) {
 		DownloadQueueEntity ret = downloadQ.get(nick).get(0);
-		downloadQ.remove(ret);
+		downloadQ.get(nick).remove(ret);
 		return ret;
 	}
 
@@ -69,6 +70,7 @@ public class DCDownloader {
 		// Using REVCONNECT
 		String fname = entity.remote_filename;
 		String save_file_name = entity.local_filename;
+		entity.connectionHandler = handler;
 		try {
 			// At this point Handler has been associated with a socket
 			// MyNick and Lock have been sent.
@@ -112,7 +114,8 @@ public class DCDownloader {
 			// Download COMPLETE
 			handler.close();
 			entity.status = DownloadStatus.COMPLETED;
-			DCLogger.Log("Download Complete" + save_file_name);
+			DCLogger.Log("Download Complete" + save_file_name
+					+ entity.status.toString());
 
 		} catch (InterruptedException e) {
 			e.printStackTrace();

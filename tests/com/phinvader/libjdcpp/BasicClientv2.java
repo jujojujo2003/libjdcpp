@@ -62,7 +62,7 @@ public class BasicClientv2 {
 
 		String remote_filename = "files.xml";
 		DCUser target_user = new DCUser();
-		target_user.nick = "Anecdote";
+		target_user.nick = "cracky";
 
 		String local_filename = "Boo2.xml";
 
@@ -78,7 +78,7 @@ public class BasicClientv2 {
 		}
 
 		try {
-			Thread.sleep(500);
+			Thread.sleep(1500);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -88,7 +88,7 @@ public class BasicClientv2 {
 		DCLogger.Log(Long.toString(e3.expectedDownloadSize));
 
 		DCUser target_user2 = new DCUser();
-		target_user2.nick = "arthur";
+		target_user2.nick = "cracky";
 
 		DCClient.PassiveDownloadConnection myrc2 = new DCClient.PassiveDownloadConnection(
 				target_user2, myuser, prefs, "Boo3.xml", remote_filename,

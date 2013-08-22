@@ -30,7 +30,6 @@ public class DCClient {
 	public DCRevconnect revConnectHandler;
 	private DCHandlers.BoardMessageHandler mainBoardMessageHandler;
 
-
 	// BASIC ALIASES to other classes.
 
 	public static class NotifyUsersChange extends UsersHandler {
@@ -137,7 +136,6 @@ public class DCClient {
 		downloadHandler.initDownloadQ();
 	}
 
-
 	/**
 	 * Start listening to Messages
 	 */
@@ -172,8 +170,8 @@ public class DCClient {
 	}
 
 	public DCDownloader.DownloadQueueEntity startPassiveDownload(
-			PassiveDownloadConnection o,
-			int timeout) throws InterruptedException {
+			PassiveDownloadConnection o, int timeout)
+			throws InterruptedException {
 		DCDownloader.DownloadQueueEntity downloadE = new DCDownloader.DownloadQueueEntity(
 				o.getTarget_user(), o.getMy_user(), o.getRemote_filaname(),
 				o.getLocal_filename());
@@ -184,16 +182,18 @@ public class DCClient {
 
 	public boolean stopDownloadHandler(
 			DCDownloader.DownloadQueueEntity downloadEntity) {
-		// TODO GRACEFUL SHUTDOWN
-		// CLose : Sockets, kill thread, remove sick elements from the
-		// DownloadQueue.
+		// TODO: A better shutdown?
+		downloadEntity.connectionHandler.close();
+		if (downloadEntity.thread.isAlive()) {
+			downloadEntity.thread.interrupt();
+		} else {
+			return false;
+		}
 
 		return true;
 	}
-
 	public DCDownloader.DownloadQueueEntity startPassiveDownload(
-			PassiveDownloadConnection o)
-			throws InterruptedException {
+			PassiveDownloadConnection o) throws InterruptedException {
 		return startPassiveDownload(o, 1000);
 	}
 
