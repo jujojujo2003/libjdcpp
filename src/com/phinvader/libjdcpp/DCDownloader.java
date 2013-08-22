@@ -32,13 +32,13 @@ public class DCDownloader {
 	public HashMap<String, ArrayList<DownloadQueueEntity>> downloadQ;
 
 	public void initDownloadQ() {
-		this.downloadQ = new HashMap<>();
+		this.downloadQ = new HashMap<String, ArrayList<DownloadQueueEntity>>();
 	}
 
 	public void addDownloadEntity(String nick , DownloadQueueEntity entity) {
 		ArrayList<DownloadQueueEntity> list = downloadQ.get(nick);
 		if(list == null){
-			list = new ArrayList<>();
+			list = new ArrayList<DCDownloader.DownloadQueueEntity>();
 		}
 		list.add(entity);
 		downloadQ.put(nick, list);
