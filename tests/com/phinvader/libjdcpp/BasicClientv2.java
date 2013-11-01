@@ -24,7 +24,7 @@ public class BasicClientv2 {
 
 		@Override
 		public void onCommand(DCMessage msg) {
-			// DCLogger.Log("SEARCH " + msg.file_path);
+			 DCLogger.Log("SEARCH " + msg.file_path);
 		}
 
 	}

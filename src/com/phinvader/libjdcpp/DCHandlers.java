@@ -55,7 +55,6 @@ public class DCHandlers {
 					if (msg2.command != null) {
 						i++;
 						if (msg2.command.equals("MyNick")) {
-							DCLogger.Log("GOT MYNICK");
 							hisnick = msg2;
 						}
 						if (msg2.command.equals("Lock")) {
