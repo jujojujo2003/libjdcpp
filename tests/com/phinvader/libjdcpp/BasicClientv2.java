@@ -24,13 +24,13 @@ public class BasicClientv2 {
 
 		@Override
 		public void onCommand(DCMessage msg) {
-			 DCLogger.Log("SEARCH " + msg.file_path);
+			 DCLogger.Log("SEARCH " + msg.file_path + " PATH : "+msg.hisinfo);
 		}
 
 	}
 
 	public static void main(String[] args) {
-		DCPreferences prefs = new DCPreferences("libjdcpp_user2", 1000,
+		DCPreferences prefs = new DCPreferences("libjdcpp_user2", 3000L*1024*1024,
 				"10.2.16.126");// This is a dummy preferences saver. TODO :
 								// Replace saver with a persistent storage
 
@@ -110,7 +110,8 @@ public class BasicClientv2 {
 		// Return is a List<DCMessage>
 		// each entry in the list, msg, has msg.command=BoardMessage, and
 		// message string stored in msg.msg_s
-		client.searchForFile("F?T?0?1?dexter", myuser);
+		client.searchForFile("F?T?0?1?dexter", myuser, DCConstants.FILETYPE_ANY);
+		DCLogger.Log("Done");
 
 	}
 

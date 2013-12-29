@@ -29,4 +29,15 @@ public class DCConstants {
 	public static int max_download_queue_size = 1024;
 
 	public static int io_buffer_size = 65536;
+	
+	public static int FILETYPE_AUDIO = 2;
+	public static int FILETYPE_COMPRESSED = 3;
+	public static int FILETYPE_DOCUMENT = 4;
+	public static int FILETYPE_EXE = 5;
+	public static int FILETYPE_IMAGE = 6;
+	public static int FILETYPE_VIDEO = 7;
+	public static int FILETYPE_DIR = 8;
+	public static int FILETYPE_TTH = 9;
+	public static int FILETYPE_ANY = 1;
+	
 }

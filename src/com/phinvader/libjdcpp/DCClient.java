@@ -218,7 +218,9 @@ public class DCClient {
 		mainMessageRouter.subscribe(command, handler);
 	}
 
-	public void searchForFile(String key, DCUser myuser) {
+	public void searchForFile(String key, DCUser myuser, int fileType) {
+		// TODO: Filesize restrictions.
+		String searchString = "F?T?0?"+fileType+"?" + key;		
 		handler.send_search(key, myuser);
 	}
 
