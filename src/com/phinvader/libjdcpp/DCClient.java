@@ -220,8 +220,9 @@ public class DCClient {
 
 	public void searchForFile(String key, DCUser myuser, int fileType) {
 		// TODO: Filesize restrictions.
-		String searchString = "F?T?0?"+fileType+"?" + key;		
-		handler.send_search(key, myuser);
+		key = key.replaceAll("\\s+", "\\$");
+		String searchString = "F?T?0?"+fileType+"?" + key;
+		handler.send_search(searchString, myuser);
 	}
 
 	public void startDownloadingFile(DCDownloader.DownloadQueueEntity entity,
