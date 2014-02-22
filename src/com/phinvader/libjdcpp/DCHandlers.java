@@ -131,7 +131,7 @@ public class DCHandlers {
 		}
 
 		public List<DCMessage> getLatestMessages() {
-			return getLatestMessages(100);
+			return listOfMessages;
 		}
 
 		public List<DCMessage> getLatestMessages(int limit) {
@@ -140,6 +140,7 @@ public class DCHandlers {
 			if (limit > listOfMessages.size()) {
 				lowerBound = 0;
 			}
+			//TODO: bugfix, subList() threw IllegalArgumentException on empty list or of some sort
 			return listOfMessages.subList(lowerBound, upperBound);
 
 		}
