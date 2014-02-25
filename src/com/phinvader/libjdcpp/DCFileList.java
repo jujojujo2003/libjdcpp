@@ -49,7 +49,7 @@ public class DCFileList {
 		return ret;
 	}
 
-	private DCFileList(String name, long size) {
+	public DCFileList(String name, long size) {
 		this.name = name;
 		this.size = size;
 	}
