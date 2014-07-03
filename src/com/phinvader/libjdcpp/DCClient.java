@@ -93,8 +93,8 @@ public class DCClient {
 		DCConnectionSocket = new Socket(ip, port);
 		handler = new MessageHandler(DCConnectionSocket);
 		DCMessage lock = handler.getNextMessage();
-		DCMessage hubname = handler.getNextMessage();
-		DCLogger.Log("Connected to :" + hubname);
+		//DCMessage hubname = handler.getNextMessage();
+		//DCLogger.Log("Connected to :" + hubname);
 
 		ArrayList<String> supported_methods = new ArrayList<String>();
 		supported_methods.add("NoHello");
